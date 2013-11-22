@@ -18,6 +18,11 @@
 
 (eval-when-compile (require 'cl))
 
+
+;;;
+;;; Packages
+;;;
+
 ;; base packages I want on all machines
 (my-add-packages
  'ace-jump-mode
@@ -33,7 +38,7 @@
  'loccur
  'markdown-mode 'multiple-cursors
  'org 'org-magit
- 'paredit 'powershell-mode 'projectile
+ 'paredit 'powershell-mode 'pp-c-l
  'rbenv
  'scala-mode2 'slamhound 'smex
  'twittering-mode
@@ -57,7 +62,10 @@
 (autoload 'google-set-c-style "google-c-style")
 (autoload 'powershell-mode "powershell-mode")
 
-;;; Global Stuff
+
+;;;
+;;; Global Settings
+;;;
 (global-hl-line-mode -1)
 (global-auto-revert-mode 1)
 (global-undo-tree-mode 1)
@@ -69,8 +77,10 @@
 (display-time-mode +1)
 (helm-mode +1)
 
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
+;;; projectile
+(projectile-global-mode +1)
+(setq projectile-enable-caching t
+      projectile-completion-system 'grizzl)
 
 (setq abbrev-mode t
       auto-revert-verbose nil
@@ -84,26 +94,160 @@
       whitespace-line-column 80
       whitespace-style '(trailing tabs lines-tail))
 
-;;; zencoding/emmet
-(eval-after-load "emmet-mode"
-  '(progn
-     (setq emmet-preview-default nil
-           emmet-indentation 2)))
+;;; auto-mode
+(setq auto-mode-alist
+      (remove (rassoc 'asm-mode auto-mode-alist) auto-mode-alist))
 
-;;; powershell
-(eval-after-load "powershell-mode"
-  '(progn
-     (setq
-      powershell-indent 2
-      powershell-continuation-indent 2)
-     (define-key powershell-mode-map (kbd "RET") 'newline-and-indent)))
+(setq auto-mode-alist
+      (append auto-mode-alist
+              '(("\\.asm$" . nasm-mode)
+                ("\\.aspx$" . html-mode)
+                ("\\.clj$" . clojure-mode)
+                ("\\.cljs$" . clojurescript-mode)
+                ("\\.config$" . xml-mode)
+                ("\\.csman$" . xml-mode)
+                ("\\.rd$" . xml-mode)
+                ("\\.rdsc$" . xml-mode)
+                ("\\.rels$" . xml-mode)
+                ("\\.cs$" . csharp-mode)
+                ("\\.cshtml$" . html-mode)
+                ("\\.csv$" . csv-mode)
+                ("\\.m$" . octave-mode)
+                ("\\.ps1$" . powershell-mode)
+                ("\\.R$" . r-mode)
+                ("\\.r$" . r-mode)
+                ("\\.spark$" . html-mode))))
 
-;;; projectile
-(projectile-global-mode +1)
-(setq projectile-enable-caching t
-      projectile-completion-system 'grizzl)
+;;; Backups
+(setq backup-by-copying t
+      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+      delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t)
+
+;;; Remembering where I was
+(setq-default save-place t)
+(savehist-mode t)
+
+;;; Aliases
+(defalias 'plp 'package-list-packages)
+(defalias 'redo 'undo-tree-redo)
+
+;;; Abbreviations
+(define-abbrev-table 'my-abbrevs
+  '(("8in" "∈")
+    ("8nin" "∉")
+    ("8inf" "∞")))
+
+;;; Mini-Buffer
+(defun my-minibuffer-setup-hook ()
+  (when (boundp 'my-key-minor-mode)
+    (my-keys-minor-mode 0)))
+
+(add-hook 'minibuffer-setup-hook 'my-minibuffer-setup-hook)
+
+
+;;;
+;;; Key bindings
+;;;
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+;; I never use ansi-term and used to hit C-c t by accident all the time
+(define-key prelude-mode-map (kbd "C-c t") 'eshell)
+
+(defvar my-keys-minor-mode-map (make-keymap) "keymap for my overrides")
+(define-key my-keys-minor-mode-map (kbd "C-c C-r") 'revert-buffer)
+(define-key my-keys-minor-mode-map (kbd "C-x C-i") 'imenu)
+(define-key my-keys-minor-mode-map (kbd "C-h a") 'apropos)
+(define-key my-keys-minor-mode-map (kbd "C-c q") 'join-line)
+(define-key my-keys-minor-mode-map (kbd "C-c C-M-j") 'nrepl-jack-in)
+(define-key my-keys-minor-mode-map (kbd "C-c c") 'org-capture)
+(define-key my-keys-minor-mode-map (kbd "C-c a") 'org-agenda)
+(define-key my-keys-minor-mode-map (kbd "C-o") 'loccur-current)
+(define-key my-keys-minor-mode-map (kbd "C-M-o") 'loccur)
+(define-key my-keys-minor-mode-map (kbd "C-S-o") 'loccur-previous-match)
+(define-key my-keys-minor-mode-map (kbd "C-c ;") 'iedit-mode)
+(define-key my-keys-minor-mode-map (kbd "C-c C-;") 'iedit-mode-from-isearch)
+(define-key my-keys-minor-mode-map (kbd "C-C m'") 'mc/edit-lines)
+(define-key my-keys-minor-mode-map (kbd "C-c M-:") 'set-rectangular-region-anchor)
+(define-key my-keys-minor-mode-map (kbd "M-`") 'goto-last-change)
+(define-key my-keys-minor-mode-map (kbd "C-c -") 'er/contract-region)
+(define-key my-keys-minor-mode-map (kbd "C-c C-f") 'browse-url)
+(define-key my-keys-minor-mode-map (kbd "C-c F") 'my-recentf-ido-find-file-other-window)
+(define-key my-keys-minor-mode-map (kbd "C-c |") 'split-window-right)
+(define-key my-keys-minor-mode-map (kbd "C-c _") 'split-window-below)
+
+(define-key helm-find-files-map (kbd "C-c DEL") 'helm-ff-run-toggle-auto-update)
+
+(key-chord-define-global "jj" 'ace-jump-word-mode)
+(key-chord-define-global "jk" 'ace-jump-char-mode)
+(key-chord-define-global "JJ" 'prelude-switch-to-previous-buffer)
+(key-chord-define-global "uu" 'undo-tree-visualize)
+
+(define-minor-mode my-keys-minor-mode
+  "Minor mode for my keybindings"
+  t " my-keys" 'my-keys-minor-mode-map)
+
+(my-keys-minor-mode 1)
+
+;;;
+;;; Code Editing
+;;;
+
+;;; prog-mode
+(eval-after-load "simple"
+  '(progn
+     (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+     (add-hook 'prog-mode-hook 'turn-off-auto-fill)
+     (add-hook 'prog-mode-hook 'guru-mode)
+     (add-hook 'prog-mode-hook 'whitespace-mode)
+     (add-hook 'prog-mode-hook 'idle-highlight-mode)
+     (add-hook 'prog-mode-hook 'rainbow-mode)
+     (add-hook 'prog-mode-hook 'subword-mode)
+
+     (define-key prog-mode-map (kbd "M-;") 'comment-dwim)
+     (define-key prog-mode-map (kbd "RET") 'newline-and-indent)))
+
+;;; Makefiles
+(eval-after-load "makefile-mode"
+  '(progn
+     (add-hook 'write-file-hooks 'my-tabify-buffer)))
+
+;;; magit
+(eval-after-load "magit"
+  '(progn
+
+     (defadvice magit-status (around magit-fullscreen activate)
+       (window-configuration-to-register :magit-fullscreen)
+       ad-do-it
+       (delete-other-windows))
+
+     (defun magit-quit-session ()
+       "Restores the previous window configuration and kills the magit buffer"
+       (interactive)
+       (kill-buffer)
+       (jump-to-register :magit-fullscreen))
+
+     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
 
 ;;; lisp stuff
+(eval-after-load "paredit"
+  '(progn
+     (define-key paredit-mode-map (kbd "M-)") 'paredit-forward-slurp-sexp)
+     (define-key paredit-mode-map (kbd "M-C-(") 'paredit-wrap-round)
+     (define-key paredit-mode-map (kbd "M-C-[") 'paredit-wrap-square)
+     (define-key paredit-mode-map (kbd "M-C-{") 'paredit-wrap-curly)
+     (define-key paredit-mode-map (kbd "M-;") 'paredit-comment-dwim)
+     (define-key paredit-mode-map (kbd "C-c }") 'paredit-forward-barf-sexp)
+     (define-key paredit-mode-map (kbd "C-c {") 'paredit-backward-barf-sexp)
+     (define-key paredit-mode-map (kbd "C-c )") 'paredit-forward-slurp-sexp)
+     (define-key paredit-mode-map (kbd "C-c (") 'paredit-backward-slurp-sexp)
+     ;; this makes nrepl buffer not worky
+     ;; (define-key paredit-mode-map (kbd "RET") 'paredit-newline)
+     (define-key paredit-mode-map (kbd "M-R") 'paredit-splice-sexp-killing-backward)))
+
 (eval-after-load "lisp-mode"
   '(progn
      (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
@@ -114,7 +258,7 @@
 (eval-after-load "ielm"
   '(progn
      (add-hook 'ielm-mode-hook 'paredit-mode)
-     (add-hook 'ielm-mode-hook 'turn-on-elisp-slime-nav-mode)))
+     (add-hook 'ielm-mode-hook 'turn-on-elisp-slime-nav-mode)))]
 
 ;;; Clojure Stuff
 (eval-after-load "clojure-mode"
@@ -136,40 +280,41 @@
      ;; (require 'clojure-cheatsheet)
      ))
 
-(defun clojurescript-run-cljsbuild (dir)
-  (interactive (list default-directory))
-  (when (get-buffer "*lein-cljsbuild*")
-    (kill-buffer "*lein-cljsbuild*"))
-  (let* ((cmd (format "cd %s && lein cljsbuild auto" dir))
-         (proc (start-process-shell-command
-                "leincljsbuild" "*lein-cljsbuild*" cmd)))
-    (message (format "dir: %s" dir))
-    (set-process-filter proc
-                        (lambda (process output)
-                          (with-current-buffer (process-buffer process)
-                            (save-excursion
-                              (goto-char (point-max))
-                              (insert output)))
-                          (cond
-                           ((string-match "That's not a task" output)
-                            (let ((debug-on-error t))
-                              (error "Couldn't run `lein cljsbuild'. Wrong directory?")))
-                           ((string-match "\\(Deleting\\|Compiling\\) ClojureScript" output)
-                            (message "lein cljsbuild: %s files" (match-string 1 output)))
-                           ((string-match "Failed!" output)
-                            (message "lein cljsbuild: Compilation FAILED")
-                            (ding))
-                           ((string-match "compiled \".+\" in \\(.+\\) seconds" output)
-                            (message "lein cljsbuild: Finished in %s seconds" (match-string 1 output))))))
-    (display-buffer (get-buffer "*lein-cljsbuild*"))
-    (message "Running lein cljsbuild...")))
-
-(defun clojurescript-repl-listen (dir)
-  (interactive (list default-directory))
-  (inferior-lisp (format "cd %s && lein trampoline cljsbuild repl-listen" dir)))
-
 (eval-after-load "clojurescript"
   '(progn
+     (defun clojurescript-run-cljsbuild (dir)
+       (interactive (list default-directory))
+       (when (get-buffer "*lein-cljsbuild*")
+         (kill-buffer "*lein-cljsbuild*"))
+       (let* ((cmd (format "cd %s && lein cljsbuild auto" dir))
+              (proc (start-process-shell-command
+                     "leincljsbuild" "*lein-cljsbuild*" cmd)))
+         (message (format "dir: %s" dir))
+         (set-process-filter proc
+                             (lambda (process output)
+                               (with-current-buffer (process-buffer process)
+                                 (save-excursion
+                                   (goto-char (point-max))
+                                   (insert output)))
+                               (cond
+                                ((string-match "That's not a task" output)
+                                 (let ((debug-on-error t))
+                                   (error "Couldn't run `lein cljsbuild'. Wrong directory?")))
+                                ((string-match "\\(Deleting\\|Compiling\\) ClojureScript" output)
+                                 (message "lein cljsbuild: %s files" (match-string 1 output)))
+                                ((string-match "Failed!" output)
+                                 (message "lein cljsbuild: Compilation FAILED")
+                                 (ding))
+                                ((string-match "compiled \".+\" in \\(.+\\) seconds" output)
+                                 (message "lein cljsbuild: Finished in %s seconds"
+                                          (match-string 1 output))))))
+         (display-buffer (get-buffer "*lein-cljsbuild*"))
+         (message "Running lein cljsbuild...")))
+
+     (defun clojurescript-repl-listen (dir)
+       (interactive (list default-directory))
+       (inferior-lisp (format "cd %s && lein trampoline cljsbuild repl-listen" dir)))
+     
      (add-hook 'clojurescript-mode-hook 'paredit)
      (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)))
 
@@ -185,7 +330,7 @@
            cider-repl-history-file (expand-file-name "~/.emacs.d/personal/.cider-history")
            nrepl-hide-special-buffers t
            cider-repl-pop-to-buffer-on-connect nil)
-     
+
      (add-hook 'cider-mode-hook 'paredit-mode)
      (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
@@ -209,21 +354,27 @@
          ;;(elein-run-cmd "test")
          (shell-command (concat elein-lein " test") output errors)))))
 
-;;; paredit stuff
-(eval-after-load "paredit"
+;; javadoc
+;;(javadoc-add-roots "")
+
+(eval-after-load "c-mode"
   '(progn
-     (define-key paredit-mode-map (kbd "M-)") 'paredit-forward-slurp-sexp)
-     (define-key paredit-mode-map (kbd "M-C-(") 'paredit-wrap-round)
-     (define-key paredit-mode-map (kbd "M-C-[") 'paredit-wrap-square)
-     (define-key paredit-mode-map (kbd "M-C-{") 'paredit-wrap-curly)
-     (define-key paredit-mode-map (kbd "M-;") 'paredit-comment-dwim)
-     (define-key paredit-mode-map (kbd "C-c }") 'paredit-forward-barf-sexp)
-     (define-key paredit-mode-map (kbd "C-c {") 'paredit-backward-barf-sexp)
-     (define-key paredit-mode-map (kbd "C-c )") 'paredit-forward-slurp-sexp)
-     (define-key paredit-mode-map (kbd "C-c (") 'paredit-backward-slurp-sexp)
-     ;; this makes nrepl buffer not worky
-     ;; (define-key paredit-mode-map (kbd "RET") 'paredit-newline)
-     (define-key paredit-mode-map (kbd "M-R") 'paredit-splice-sexp-killing-backward)))
+     (define-key c-mode-map (kbd "C-c C-k") 'compile)
+     (add-hook 'c-mode-common-hook 'google-set-c-style)
+     (add-hook 'c-mode-common-hook 'google-make-newline-indent)
+     (setq compilation-read-command nil)))
+
+(eval-after-load "cc-mode"
+  '(progn
+     (define-key c-mode-base-map (kbd "C-c C-k") 'compile)
+     (add-hook 'c-mode-common-hook 'google-set-c-style)
+     (add-hook 'c-mode-common-hook 'google-make-newline-indent)
+     (setq compilation-read-command nil)))
+
+(eval-after-load "js"
+  '(progn
+     (add-hook 'js-mode-hook 'paredit-mode)
+     (setq c-basis-offset 2)))
 
 ;;; python stuff
 (eval-after-load "python-mode"
@@ -241,14 +392,64 @@
 (eval-after-load "scala-mode"
   '(progn
      (require 'scala-mode2)
-     ;(require 'ensime)
+     ;;(require 'ensime)
      (defun my-scala-mode-hook ()
        (scala-mode-feature-install))
 
-     ;(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
+     ;;(add-hook 'scala-mode-hook 'ensime-scala-mode-hook)
      (add-hook 'scala-mode-hook 'my-scala-mode-hook)))
 
-;;;  org-mode stuff
+;;; powershell
+(eval-after-load "powershell-mode"
+  '(progn
+     (setq
+      powershell-indent 2
+      powershell-continuation-indent 2)
+     (define-key powershell-mode-map (kbd "RET") 'newline-and-indent)))
+
+;;; csharp-mode
+(eval-after-load 'csharp-mode
+  '(progn
+     (defun csharp-makefile-compile ()
+       (interactive)
+       (cd (locate-dominating-file default-directory "Makefile"))
+       (compile "make test"))
+
+     (define-key csharp-mode-map (kbd "C-c ,") 'w-unit-test)
+     (define-key csharp-mode-map (kbd "C-c C-k") 'csharp-makefile-compile)
+     (define-key csharp-mode-map (kbd "{") 'c-electric-brace)))
+
+;;; 
+;;; markup languages
+;;;
+
+;;; zencoding/emmet
+(eval-after-load "emmet-mode"
+  '(progn
+     (setq emmet-preview-default nil
+           emmet-indentation 2)))
+
+(eval-after-load "sgml-mode"
+  '(progn
+     (add-hook 'sgml-mode-hook 'emmet-mode)
+     (define-key sgml-mode-map (kbd "RET") 'newline-and-indent)))
+
+(eval-after-load "nxml-mode"
+  '(progn
+     (add-hook 'nxml-mode-hook 'emmet-mode)
+     (define-key nxml-mode-map (kbd "RET") 'newline-and-indent)))
+
+(eval-after-load "css-mode"
+  '(progn
+     (add-hook 'css-mode-hook 'emmet-mode)))
+
+(eval-after-load "html-mode"
+  '(progn
+     (add-hook 'html-mode-hook 'emmet-mode)))
+
+;;; 
+;;;  org-mode
+;;; 
 (eval-after-load "org"
   '(progn
      (add-hook 'org-mode-hook 'auto-fill-mode)
@@ -323,76 +524,6 @@
                            (overlay-buffer org-edit-src-overlay)
                          nrepl-buffer-ns))))))
 
-;;; csharp-mode
-(eval-after-load 'csharp-mode
-  '(progn
-     (defun csharp-makefile-compile ()
-       (interactive)
-       (cd (locate-dominating-file default-directory "Makefile"))
-       (compile "make test"))
-
-     (define-key csharp-mode-map (kbd "C-c ,") 'w-unit-test)
-     (define-key csharp-mode-map (kbd "C-c C-k") 'csharp-makefile-compile)
-     (define-key csharp-mode-map (kbd "{") 'c-electric-brace)))
-
-;;; prog-mode
-(eval-after-load "simple"
-  '(progn
-     (add-hook 'prog-mode-hook 'flyspell-prog-mode)
-     (add-hook 'prog-mode-hook 'turn-off-auto-fill)
-     (add-hook 'prog-mode-hook 'guru-mode)
-     (add-hook 'prog-mode-hook 'whitespace-mode)
-     (add-hook 'prog-mode-hook 'idle-highlight-mode)
-     (add-hook 'prog-mode-hook 'rainbow-mode)
-     (add-hook 'prog-mode-hook 'subword-mode)
-
-     (define-key prog-mode-map (kbd "M-;") 'comment-dwim)
-     (define-key prog-mode-map (kbd "RET") 'newline-and-indent)))
-
-;;; xml
-(eval-after-load "sgml-mode"
-  '(progn
-     (add-hook 'sgml-mode-hook 'emmet-mode)
-     (define-key sgml-mode-map (kbd "RET") 'newline-and-indent)))
-
-(eval-after-load "nxml-mode"
-  '(progn
-     (add-hook 'nxml-mode-hook 'emmet-mode)
-     (define-key nxml-mode-map (kbd "RET") 'newline-and-indent)))
-
-(eval-after-load "css-mode"
-  '(progn
-     (add-hook 'css-mode-hook 'emmet-mode)))
-
-(eval-after-load "html-mode"
-  '(progn
-     (add-hook 'html-mode-hook 'emmet-mode)))
-
-;;; Misc. other modes
-(eval-after-load "makefile-mode"
-  '(progn
-     (add-hook 'write-file-hooks 'my-tabify-buffer)))
-
-(defun my-minibuffer-setup-hook ()
-  (when (boundp 'my-key-minor-mode)
-    (my-keys-minor-mode 0)))
-
-(add-hook 'minibuffer-setup-hook 'my-minibuffer-setup-hook)
-
-(eval-after-load "c-mode"
-  '(progn
-     (define-key c-mode-map (kbd "C-c C-k") 'compile)
-     (add-hook 'c-mode-common-hook 'google-set-c-style)
-     (add-hook 'c-mode-common-hook 'google-make-newline-indent)
-     (setq compilation-read-command nil)))
-
-(eval-after-load "cc-mode"
-  '(progn
-     (define-key c-mode-base-map (kbd "C-c C-k") 'compile)
-     (add-hook 'c-mode-common-hook 'google-set-c-style)
-     (add-hook 'c-mode-common-hook 'google-make-newline-indent)
-     (setq compilation-read-command nil)))
-
 (eval-after-load "ledger-mode"
   '(progn
      (custom-set-faces
@@ -409,96 +540,31 @@
                             ("account" "ledger -f %(ledger-file) reg %(account)")
                             ("budget" "ledger -f %{ledger-file} --budget --monthly reg '^Expenses' -p 'this month'")))
      (local-set-key (kbd "C-o") 'ledger-occur)))
-
-(eval-after-load "js"
-  '(progn
-     (add-hook 'js-mode-hook 'paredit-mode)
-     (setq c-basis-offset 2)))
-
-;;; dired
-(eval-after-load "dired"
-  '(progn
-     (dired-details-install)))
+
+;;;
+;;; Other, Non-Developer Tools
+;;;
 
 ;;;  google-translate
-(defvar *my-language* "English")
-(defvar *learning-language* "Chinese Traditional")
+;; (defvar *my-language* "English")
+;; (defvar *learning-language* "Chinese Traditional")
 
-(defun my-translate-at-point ()
-  (interactive)
-  (google-translate-translate *learning-language* *my-language*
-                              (current-word t)))
+;; (defun my-translate-at-point ()
+;;   (interactive)
+;;   (google-translate-translate *learning-language* *my-language*
+;;                               (current-word t)))
 
-(global-set-key (kbd "<f1>") 'my-translate-at-point)
+;; (global-set-key (kbd "<f1>") 'my-translate-at-point)
 
 ;;; twittering
 (eval-after-load "twittering-mode"
   '(progn
      (setq twittering-use-master-password t)))
 
-;;; auto-mode
-(setq auto-mode-alist
-      (remove (rassoc 'asm-mode auto-mode-alist) auto-mode-alist))
-
-(setq auto-mode-alist
-      (append auto-mode-alist
-              '(("\\.asm$" . nasm-mode)
-                ("\\.aspx$" . html-mode)
-                ("\\.clj$" . clojure-mode)
-                ("\\.cljs$" . clojurescript-mode)
-                ("\\.config$" . xml-mode)
-                ("\\.csman$" . xml-mode)
-                ("\\.rd$" . xml-mode)
-                ("\\.rdsc$" . xml-mode)
-                ("\\.rels$" . xml-mode)
-                ("\\.cs$" . csharp-mode)
-                ("\\.cshtml$" . html-mode)
-                ("\\.csv$" . csv-mode)
-                ("\\.m$" . octave-mode)
-                ("\\.ps1$" . powershell-mode)
-                ("\\.R$" . r-mode)
-                ("\\.r$" . r-mode)
-                ("\\.spark$" . html-mode))))
-
-;;; magit
-(eval-after-load "magit"
-  '(progn
-
-     (defadvice magit-status (around magit-fullscreen activate)
-       (window-configuration-to-register :magit-fullscreen)
-       ad-do-it
-       (delete-other-windows))
-
-     (defun magit-quit-session ()
-       "Restores the previous window configuration and kills the magit buffer"
-       (interactive)
-       (kill-buffer)
-       (jump-to-register :magit-fullscreen))
-
-     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
-
 ;;; w3m
 (eval-after-load "w3m"
   '(progn
      (require 'org-w3m)))
-
-;;; Backups
-(setq backup-by-copying t
-      backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-      delete-old-versions t
-      kept-new-versions 6
-      kept-old-versions 2
-      version-control t)
-
-;;; Remembering where I was
-(setq-default save-place t)
-(savehist-mode t)
-
-;;; dired
-(eval-after-load "dired-details"
-  '(progn
-     (setq-default dired-details-hidden-string "--- ")
-     (dired-details-install)))
 
 ;;; ERC
 (eval-after-load "erc-mode"
@@ -633,17 +699,10 @@
   '(progn
      (add-hook 'message-mode-hook 'flyspell-mode)))
 
-;; javadoc
-;;(javadoc-add-roots "")
-
-;; Misc stuff
-(eval-after-load "dired-aux"
-  '(progn
-     (add-to-list 'dired-compress-file-suffixes
-                  '("\\.zip\\'" ".zip" "unzip"))))
-
+;;; dired
 (eval-after-load "dired"
   '(progn
+     (dired-details-install)
      (defun dired-zip-files (zip-file)
        "Create an archive containing the marked files."
        (interactive "sEnter name of zip file: ")
@@ -671,6 +730,11 @@
 
      (define-key dired-mode-map "z" 'dired-zip-files)))
 
+(eval-after-load "dired-aux"
+  '(progn
+     (add-to-list 'dired-compress-file-suffixes
+                  '("\\.zip\\'" ".zip" "unzip"))))
+
 ;;; eshell
 (eval-after-load "eshell"
   '(progn
@@ -683,53 +747,7 @@
 (eval-after-load "ack-and-a-half"
   '(progn
      (setq ack-and-a-half-arguments "")))
-
-;;; Aliases
-(defalias 'plp 'package-list-packages)
-(defalias 'redo 'undo-tree-redo)
-
-;;; Abbreviations
-(define-abbrev-table 'my-abbrevs
-  '(("8in" "∈")
-    ("8nin" "∉")
-    ("8inf" "∞")))
-
-;;; Key bindings
-
-;; I never use ansi-term and used to hit C-c t by accident all the time
-(define-key prelude-mode-map (kbd "C-c t") 'eshell)
-
-(defvar my-keys-minor-mode-map (make-keymap) "keymap for my overrides")
-(define-key my-keys-minor-mode-map (kbd "C-c C-r") 'revert-buffer)
-(define-key my-keys-minor-mode-map (kbd "C-x C-i") 'imenu)
-(define-key my-keys-minor-mode-map (kbd "C-h a") 'apropos)
-(define-key my-keys-minor-mode-map (kbd "C-c q") 'join-line)
-(define-key my-keys-minor-mode-map (kbd "C-c C-M-j") 'nrepl-jack-in)
-(define-key my-keys-minor-mode-map (kbd "C-c c") 'org-capture)
-(define-key my-keys-minor-mode-map (kbd "C-c a") 'org-agenda)
-(define-key my-keys-minor-mode-map (kbd "C-o") 'loccur-current)
-(define-key my-keys-minor-mode-map (kbd "C-M-o") 'loccur)
-(define-key my-keys-minor-mode-map (kbd "C-S-o") 'loccur-previous-match)
-(define-key my-keys-minor-mode-map (kbd "C-c ;") 'iedit-mode)
-(define-key my-keys-minor-mode-map (kbd "C-c C-;") 'iedit-mode-from-isearch)
-(define-key my-keys-minor-mode-map (kbd "C-C m'") 'mc/edit-lines)
-(define-key my-keys-minor-mode-map (kbd "C-c M-:") 'set-rectangular-region-anchor)
-(define-key my-keys-minor-mode-map (kbd "M-`") 'goto-last-change)
-(define-key my-keys-minor-mode-map (kbd "C-c =") 'er/expand-region)
-(define-key my-keys-minor-mode-map (kbd "C-c -") 'er/contract-region)
-(define-key my-keys-minor-mode-map (kbd "C-c C-f") 'browse-url)
-(define-key my-keys-minor-mode-map (kbd "C-c F") 'my-recentf-ido-find-file-other-window)
-(define-key my-keys-minor-mode-map (kbd "C-c |") 'split-window-right)
-(define-key my-keys-minor-mode-map (kbd "C-c _") 'split-window-below)
-
-(define-key helm-find-files-map (kbd "C-c DEL") 'helm-ff-run-toggle-auto-update)
-
-(define-minor-mode my-keys-minor-mode
-  "Minor mode for my keybindings"
-  t " my-keys" 'my-keys-minor-mode-map)
-
-(my-keys-minor-mode 1)
-
+
 (run-hooks 'my-init-hook)
 
 ;;; normal emacs customization stuff
