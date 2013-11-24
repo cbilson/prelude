@@ -6,13 +6,6 @@
 ;; byte-compile-warnings: (not cl-functions)
 ;; End:
 
-(require 'my-util
-         (concat (file-name-directory (or load-file-name byte-compile-current-file))
-                 "my-util"))
-
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
-
 ;;; get rid of some prelude keybindings
 (global-unset-key (kbd "C-c RET"))
 
@@ -24,37 +17,29 @@
 ;;;
 
 ;; base packages I want on all machines
-(my-add-packages
- 'ace-jump-mode
- 'cider 'clojure-cheatsheet 'clojure-mode 'clojure-snippets 'clojurescript-mode
- 'coffee-mode 'csv-mode 'ctags 'ctags-update 'cyberpunk-theme
- 'diminish 'dired-details
- 'editorconfig 'elein 'elisp-slime-nav 'emmet-mode 'ensime 'ess
- 'feature-mode
- 'git-gutter+ 'google-c-style 'goto-chg 'grizzl
- 'idle-highlight-mode 'iedit
- 'js-comint
- 'kibit-mode
- 'loccur
- 'markdown-mode 'multiple-cursors
- 'org 'org-magit
- 'paredit 'powershell-mode 'pp-c-l
- 'rbenv
- 'scala-mode2 'slamhound 'smex
- 'twittering-mode
- 'undo-tree
- 'wrap-region
- 'w3m)
+(prelude-require-packages
+ '(ace-jump-mode
+   cider clojure-cheatsheet clojure-mode clojure-snippets clojurescript-mode
+   coffee-mode csv-mode ctags ctags-update cyberpunk-theme
+   diminish dired-details
+   editorconfig elein elisp-slime-nav emmet-mode ensime ess
+   feature-mode
+   git-gutter+ google-c-style goto-chg grizzl
+   idle-highlight-mode iedit
+   js-comint
+   kibit-mode
+   loccur
+   markdown-mode multiple-cursors
+   org org-magit
+   paredit powershell-mode pp-c-l
+   rbenv
+   scala-mode2 slamhound smex
+   twittering-mode
+   undo-tree
+   wrap-region
+   w3m))
 
-(defvar my-refile nil "Where I capture things")
-(defvar my-kanban nil "My personal kanban")
-(defvar my-notes-file nil "Where to store org-captured notes and other stuff")
-(defvar my-chinese-notes nil)
-(defvar my-agenda-files nil)
-
-(my-load-extra-customizations)
-(my-install-packages)
-
+;; some modes that don't have working autoloads of their own
 (autoload 'loccur-current "loccur")
 (autoload 'clojure-mode "clojure-mode")
 (autoload 'dired-details-install "dired-details")
@@ -147,6 +132,13 @@
 
 (add-hook 'minibuffer-setup-hook 'my-minibuffer-setup-hook)
 
+;;; some vars I use
+(defvar my-refile nil "Where I capture things")
+(defvar my-kanban nil "My personal kanban")
+(defvar my-notes-file nil "Where to store org-captured notes and other stuff")
+(defvar my-chinese-notes nil)
+(defvar my-agenda-files nil)
+
 
 ;;;
 ;;; Key bindings
@@ -180,11 +172,6 @@
 (define-key my-keys-minor-mode-map (kbd "C-c _") 'split-window-below)
 
 (define-key helm-find-files-map (kbd "C-c DEL") 'helm-ff-run-toggle-auto-update)
-
-(key-chord-define-global "jj" 'ace-jump-word-mode)
-(key-chord-define-global "jk" 'ace-jump-char-mode)
-(key-chord-define-global "JJ" 'prelude-switch-to-previous-buffer)
-(key-chord-define-global "uu" 'undo-tree-visualize)
 
 (define-minor-mode my-keys-minor-mode
   "Minor mode for my keybindings"

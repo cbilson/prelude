@@ -10,7 +10,7 @@
  ;; "~/src/emacs-stuff/org-octopress"
  "~/src/emacs-stuff/google-translate")
 
-(my-add-packages 'google-translate 'csharp-mode 'grr)
+(prelude-require-packages '(google-translate csharp-mode grr))
 
 (setq browse-url-browser-function 'browse-url-default-macosx-browser
       user-mail-address "cbilson@pobox.com"
@@ -176,4 +176,3 @@ will contain the matched URL, if any.")
                          (format "Pass.\nRan %s tests. %s failures, %s errors."
                                  clojure-test-count clojure-test-failure-count
                                  clojure-test-error-count))))))
-

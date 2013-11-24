@@ -33,6 +33,3 @@
    (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
 
 (global-set-key (kbd "C-c M-RET") 'toggle-fullscreen)
-
-
-
