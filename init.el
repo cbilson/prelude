@@ -121,8 +121,8 @@ by Prelude.")
 
 ;; load the personal settings (this includes `custom-file')
 (when (file-exists-p prelude-personal-dir)
-  (message "Loading personal configuration files %s..." custom-file)
-  (load custom-file))
+  (message "Loading personal configuration files %s..." prelude-personal-dir)
+  (mapc 'load (directory-files prelude-personal-dir 't "^[^#].*el$")))
 
 (message "Prelude is ready to do thy bidding, Master %s!" current-user)
 
