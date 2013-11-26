@@ -154,7 +154,7 @@
 (define-key my-keys-minor-mode-map (kbd "C-x C-i") 'imenu)
 (define-key my-keys-minor-mode-map (kbd "C-h a") 'apropos)
 (define-key my-keys-minor-mode-map (kbd "C-c q") 'join-line)
-(define-key my-keys-minor-mode-map (kbd "C-c C-M-j") 'nrepl-jack-in)
+(define-key my-keys-minor-mode-map (kbd "C-c C-M-j") 'cider-jack-in)
 (define-key my-keys-minor-mode-map (kbd "C-c c") 'org-capture)
 (define-key my-keys-minor-mode-map (kbd "C-c a") 'org-agenda)
 (define-key my-keys-minor-mode-map (kbd "C-o") 'loccur-current)
@@ -231,8 +231,6 @@
      (define-key paredit-mode-map (kbd "C-c {") 'paredit-backward-barf-sexp)
      (define-key paredit-mode-map (kbd "C-c )") 'paredit-forward-slurp-sexp)
      (define-key paredit-mode-map (kbd "C-c (") 'paredit-backward-slurp-sexp)
-     ;; this makes nrepl buffer not worky
-     ;; (define-key paredit-mode-map (kbd "RET") 'paredit-newline)
      (define-key paredit-mode-map (kbd "M-R") 'paredit-splice-sexp-killing-backward)))
 
 (eval-after-load "lisp-mode"
@@ -309,7 +307,7 @@
   '(progn
 
      (setq cider-use-pretty-printing t
-           cider-popup-stacktraces nil
+           cider-popup-stacktraces t
            cider-repl-popup-stacktraces t
            cider-auto-select-error-buffer nil
            cider-repl-display-in-current-window t
@@ -500,7 +498,7 @@
        "Execute a block of Clojure code with Babel and CIDER."
        (require 'cider)
        (if (nrepl-current-connection-buffer)
-           (let ((result (nrepl-eval (org-babel-expand-body:clojure body params))))
+           (let ((result (cider-eval (org-babel-expand-body:clojure body params))))
              (car (read-from-string (plist-get result :value))))
          (error "CIDER not connected!")))
 
