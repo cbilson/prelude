@@ -324,7 +324,21 @@
      (add-hook 'cider-repl-mode-hook 'rainbow-delimiters-mode)
      (add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
 
-     (add-to-list 'same-window-buffer-names "*cider*")))
+     (add-to-list 'same-window-buffer-names "*cider*")
+
+     ;; Temporary fix for issue #184
+     ;; Not sure why this isn't already in the ELPA package  o_O
+     (defun clojure-test-make-handler (callback)
+       (lexical-let ((buffer (current-buffer))
+                     (callback callback))
+         (nrepl-make-response-handler buffer
+                                      (lambda (buffer value)
+                                        (funcall callback buffer value))
+                                      (lambda (buffer value)
+                                        (cider-emit-interactive-output value))
+                                      (lambda (buffer err)
+                                        (cider-emit-interactive-output err))
+                                      '())))))
 
 (eval-after-load "elein"
   '(progn
