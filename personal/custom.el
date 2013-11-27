@@ -145,6 +145,7 @@
 ;;;
 (global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
+(put 'set-goal-column 'disabled nil)
 
 ;; I never use ansi-term and used to hit C-c t by accident all the time
 (define-key prelude-mode-map (kbd "C-c t") 'eshell)
