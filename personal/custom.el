@@ -336,9 +336,9 @@
                                       (lambda (buffer value)
                                         (funcall callback buffer value))
                                       (lambda (buffer value)
-                                        (cider-emit-interactive-output value))
+                                        (cider-repl-emit-interactive-output value))
                                       (lambda (buffer err)
-                                        (cider-emit-interactive-output err))
+                                        (cider-repl-emit-interactive-output err))
                                       '())))))
 
 (eval-after-load "elein"
