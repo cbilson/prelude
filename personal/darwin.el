@@ -36,12 +36,11 @@
 
     (global-set-key (kbd "C-c M-RET") 'toggle-fullscreen)
 
-    (load (concat (file-name-directory load-file-name) "my-util"))
+    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
+    (add-to-list 'load-path "~/src/emacs-stuff/org-octopress")
+    (add-to-list 'load-path "~/src/emacs-stuff/google-translate")
 
-    (my-add-load-paths
-     "/usr/local/share/emacs/site-lisp/mu4e"
-     ;; "~/src/emacs-stuff/org-octopress"
-     "~/src/emacs-stuff/google-translate")
+    (defalias 'mm 'mu4e)
 
     (prelude-require-packages '(google-translate csharp-mode grr))
 
@@ -57,21 +56,16 @@
         (process-send-string process "\n")
         (process-send-eof process)))
 
-    (defvar fail-image-filename (expand-file-name (concat user-emacs-directory "icons/orange-x.jpeg")))
-    (defvar pass-image-filename (expand-file-name (concat user-emacs-directory "icons/green-ok.jpg")))
+    (defvar fail-image-filename
+      (expand-file-name (concat user-emacs-directory "icons/orange-x.jpeg")))
+    (defvar pass-image-filename
+      (expand-file-name (concat user-emacs-directory "icons/green-ok.jpg")))
 
     (defun my-notify-fail (id msg)
       (my-grr-notify msg :id id :image fail-image-filename))
 
     (defun my-notify-pass (id msg)
       (my-grr-notify msg :id id :image pass-image-filename))
-
-    (my-add-eval-after-init
-     '(progn
-        (require 'rbenv)
-        (require 'mu4e)
-        (require 'org-mu4e)
-        (defalias 'mm 'mu4e)))
 
     (eval-after-load "mu4e"
       '(progn
