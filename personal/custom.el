@@ -18,13 +18,12 @@
 
 ;; base packages I want on all machines
 (prelude-require-packages
- '(ace-jump-mode
-   cider clojure-cheatsheet clojure-mode clojure-snippets clojurescript-mode
+ '(cider clojure-cheatsheet clojure-mode clojure-snippets clojurescript-mode
    coffee-mode csv-mode ctags ctags-update cyberpunk-theme
-   diminish dired-details
+   dired-details
    editorconfig elein elisp-slime-nav emmet-mode ensime ess
    feature-mode
-   git-gutter+ google-c-style goto-chg grizzl
+   git-gutter+ google-c-style goto-chg
    idle-highlight-mode iedit
    js-comint
    kibit-mode
@@ -35,7 +34,6 @@
    rbenv
    s scala-mode2 slamhound smex
    twittering-mode
-   undo-tree
    wrap-region
    w3m))
 
@@ -87,16 +85,14 @@
       (append auto-mode-alist
               '(("\\.asm$" . nasm-mode)
                 ("\\.aspx$" . html-mode)
-                ("\\.clj$" . clojure-mode)
                 ("\\.cljs$" . clojurescript-mode)
                 ("\\.config$" . xml-mode)
+                ("\\.cs$" . csharp-mode)
+                ("\\.cshtml$" . html-mode)
                 ("\\.csman$" . xml-mode)
                 ("\\.rd$" . xml-mode)
                 ("\\.rdsc$" . xml-mode)
                 ("\\.rels$" . xml-mode)
-                ("\\.cs$" . csharp-mode)
-                ("\\.cshtml$" . html-mode)
-                ("\\.csv$" . csv-mode)
                 ("\\.m$" . octave-mode)
                 ("\\.ps1$" . powershell-mode)
                 ("\\.R$" . r-mode)
