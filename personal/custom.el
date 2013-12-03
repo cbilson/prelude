@@ -508,12 +508,18 @@
              (car (read-from-string (plist-get result :value))))
          (error "CIDER not connected!")))
 
-     (add-hook 'org-src-mode-hook
-               '(lambda ()
-                  (set (make-local-variable 'nrepl-buffer-ns)
-                       (with-current-buffer
-                           (overlay-buffer org-edit-src-overlay)
-                         nrepl-buffer-ns))))))
+     (defun my-nrepl-org-src-mode-hook ()
+       (when (boundp 'nrepl-buffer-ns)
+         (set (make-local-variable 'nrepl-buffer-ns)
+              (with-current-buffer
+                  (overlay-buffer org-edit-src-overlay)
+                nrepl-buffer-ns))))
+
+     (add-hook 'org-src-mode-hook 'my-nrepl-org-src-mode-hook)))
+
+(eval-after-load "ob-plantuml"
+  '(progn
+     (setq org-plantuml-jar-path (expand-path "c:/tools/plantuml.jar"))))g
 
 (eval-after-load "ledger-mode"
   '(progn
