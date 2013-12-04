@@ -328,8 +328,7 @@
      ;; if the vendor directory has cider-inspect, set that up
      (let ((inspect-dir (expand-file-name  "cider-inspect" prelude-vendor-dir)))
        (when (file-exists-p inspect-dir)
-         (when (not (member load-path inspect-dir))
-           (add-to-list 'load-path inspect-dir))
+         (add-to-list 'load-path inspect-dir)
          (require 'cider-inspect)
          (define-key cider-mode-map (kbd "C-c i") 'cider-inspect)))))
 
