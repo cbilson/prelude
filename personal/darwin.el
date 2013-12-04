@@ -36,9 +36,11 @@
 
     (global-set-key (kbd "C-c M-RET") 'toggle-fullscreen)
 
-    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
-    (add-to-list 'load-path "~/src/emacs-stuff/org-octopress")
-    (add-to-list 'load-path "~/src/emacs-stuff/google-translate")
+    (add-to-list 'load-path (expand-file-name "~/src/emacs-stuff/mu/mu4e"))
+    (add-to-list 'load-path (expand-file-name "~/src/emacs-stuff/org-octopress"))
+    (add-to-list 'load-path (expand-file-name "~/src/emacs-stuff/google-translate"))
+
+    (require 'mu4e)
 
     (defalias 'mm 'mu4e)
 
