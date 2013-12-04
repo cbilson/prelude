@@ -31,7 +31,7 @@
    loccur
    markdown-mode multiple-cursors
    org org-magit
-   paredit powershell-mode pp-c-l
+   paredit plantuml-mode powershell-mode pp-c-l
    rbenv
    s scala-mode2 slamhound smex
    twittering-mode
