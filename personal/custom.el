@@ -466,6 +466,10 @@
 ;;; 
 (eval-after-load "org"
   '(progn
+
+     ;; for some reason (htmlize?) I get errors in org unless I have flymake
+     (require 'flymake)
+     
      (add-hook 'org-mode-hook 'auto-fill-mode)
 
      (setq org-todo-keywords '((sequence "BACKLOG(b!)" "READY(r!)" "TODAY(t!)"
