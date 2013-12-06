@@ -1,0 +1,32 @@
+# -*- mode: snippet -*-
+# name: code-jam template
+# key: jam
+# --
+
+(defn solve [$2]
+      $3)
+
+(defn partition-test-cases [lines]
+  (->> (drop 1 lines) ; number of test cases in whole file
+       $0))
+
+(defn parse-test-case [lines]
+ $1)
+
+(defn print-test-cases [results]
+  (->> (map-indexed #(println "Case #" (inc %1) ": " %2) results)
+       dorun))
+
+(defn solve-file [filename]
+  (with-open [r (io/reader filename)]
+    (->> (line-seq r)
+         partition-test-cases
+         (map parse-test-case)
+         (map solve)
+         print-test-cases)))
+
+(defn solve-out-file [filename]
+  (let [out-filename (str filename ".out")]
+    (binding [*out* (java.io.FileWriter. out-filename)]
+      (solve-file filename)
+      out-filename)))

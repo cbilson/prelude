@@ -18,7 +18,7 @@
 
 ;; base packages I want on all machines
 (prelude-require-packages
- '(cider clojure-cheatsheet clojure-mode clojure-snippets clojurescript-mode
+ '(cider clojure-cheatsheet clojure-mode clojurescript-mode
    coffee-mode csv-mode ctags ctags-update cyberpunk-theme
    dired-details
    editorconfig elein elisp-slime-nav emmet-mode ensime ess
@@ -137,7 +137,6 @@
 (defvar my-notes-file nil "Where to store org-captured notes and other stuff")
 (defvar my-chinese-notes nil)
 (defvar my-agenda-files nil)
-(setq yas-snippet-dirs (concat (file-name-as-directory prelude-personal-dir) "snippets"))
 
 
 ;;;
@@ -234,6 +233,12 @@
      (define-key paredit-mode-map (kbd "C-c (") 'paredit-backward-slurp-sexp)
      (define-key paredit-mode-map (kbd "M-R") 'paredit-splice-sexp-killing-backward)))
 
+(eval-after-load "yasnippet" 
+  '(progn
+     (let* ((customizations (file-name-as-directory prelude-personal-dir))
+            (custom-snippets (concat customizations "snippets")))
+       (add-to-list 'yas-snippet-dirs custom-snippets))))
+
 (eval-after-load "lisp-mode"
   '(progn
      (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
@@ -245,10 +250,6 @@
   '(progn
      (add-hook 'ielm-mode-hook 'paredit-mode)
      (add-hook 'ielm-mode-hook 'turn-on-elisp-slime-nav-mode)))
-
-(eval-after-load "clojure-snippets"
-  '(progn
-     (setq clojure-snippets-dir (concat (file-name-as-directory yas-snippet-dirs) "clojure-snippets"))))
 
 ;;; Clojure Stuff
 (eval-after-load "clojure-mode"
@@ -414,12 +415,12 @@
        (cd (locate-dominating-file default-directory "Makefile"))
        (compile "make test"))
 
+     (require 'yasnippet)
+
      (let ((snip-dir (expand-file-name "csharp-mode" yas-snippet-dirs)))
        (make-directory snip-dir t)
        (add-to-list 'yas-snippet-dirs snip-dir t)
        (yas-load-directory snip-dir))
-
-     (require 'yasnippet)
 
      (define-key csharp-mode-map (kbd "C-c ,") 'w-unit-test)
      (define-key csharp-mode-map (kbd "C-c C-k") 'csharp-makefile-compile)
