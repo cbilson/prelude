@@ -137,6 +137,7 @@
 (defvar my-notes-file nil "Where to store org-captured notes and other stuff")
 (defvar my-chinese-notes nil)
 (defvar my-agenda-files nil)
+(setq yas-snippet-dirs (concat (file-name-as-directory prelude-personal-dir) "snippets"))
 
 
 ;;;
@@ -245,6 +246,10 @@
      (add-hook 'ielm-mode-hook 'paredit-mode)
      (add-hook 'ielm-mode-hook 'turn-on-elisp-slime-nav-mode)))
 
+(eval-after-load "clojure-snippets"
+  '(progn
+     (setq clojure-snippets-dir (concat (file-name-as-directory yas-snippet-dirs) "clojure-snippets"))))
+
 ;;; Clojure Stuff
 (eval-after-load "clojure-mode"
   '(progn
@@ -262,8 +267,8 @@
        (interactive)
        (elein-run-cmd "deps"))
 
-     ;; (require 'clojure-cheatsheet)
-     ))
+     (require 'clojure-cheatsheet)
+     (require 'yasnippet)))
 
 (eval-after-load "clojurescript"
   '(progn
@@ -301,7 +306,9 @@
        (inferior-lisp (format "cd %s && lein trampoline cljsbuild repl-listen" dir)))
      
      (add-hook 'clojurescript-mode-hook 'paredit)
-     (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)))
+     (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)
+     
+     (require 'yasnippet)))
 
 (eval-after-load "cider"
   '(progn
@@ -407,9 +414,19 @@
        (cd (locate-dominating-file default-directory "Makefile"))
        (compile "make test"))
 
+     (let ((snip-dir (expand-file-name "csharp-mode" yas-snippet-dirs)))
+       (make-directory snip-dir t)
+       (add-to-list 'yas-snippet-dirs snip-dir t)
+       (yas-load-directory snip-dir))
+
+     (require 'yasnippet)
+
      (define-key csharp-mode-map (kbd "C-c ,") 'w-unit-test)
      (define-key csharp-mode-map (kbd "C-c C-k") 'csharp-makefile-compile)
-     (define-key csharp-mode-map (kbd "{") 'c-electric-brace)))
+     (define-key csharp-mode-map (kbd "{") 'c-electric-brace)
+
+     (c-lang-defconst c-other-block-decl-kwds
+       csharp nil)))
 
 ;;; 
 ;;; markup languages
@@ -528,6 +545,12 @@
   '(progn
      (setq org-plantuml-jar-path (expand-path "c:/tools/plantuml.jar"))))g
 
+
+;;;
+;;; Other, Non-Developer Tools
+;;;
+
+;;; ledger
 (eval-after-load "ledger-mode"
   '(progn
      (custom-set-faces
@@ -544,10 +567,6 @@
                             ("account" "ledger -f %(ledger-file) reg %(account)")
                             ("budget" "ledger -f %{ledger-file} --budget --monthly reg '^Expenses' -p 'this month'")))
      (local-set-key (kbd "C-o") 'ledger-occur)))
-
-;;;
-;;; Other, Non-Developer Tools
-;;;
 
 ;;;  google-translate
 ;; (defvar *my-language* "English")
@@ -751,6 +770,33 @@
 (eval-after-load "ack-and-a-half"
   '(progn
      (setq ack-and-a-half-arguments "")))
+
+
+;;; utility functions
+
+;; by Christopher Wellons. 2011-11-18. Editted by Xah Lee.
+(defun insert-random-uuid-2 ()
+  "Insert a UUID. This uses a simple hashing of variable data."
+  (interactive)
+  (let ((myStr (md5 (format "%s%s%s%s%s%s%s%s%s%s"
+                            (user-uid)
+                            (emacs-pid)
+                            (system-name)
+                            (user-full-name)
+                            (current-time)
+                            (emacs-uptime)
+                            (garbage-collect)
+                            (buffer-string)
+                            (random)
+                            (recent-keys)))))
+    
+    (insert (format "%s-%s-4%s-a%s-%s"
+                    (substring myStr 0 8)
+                    (substring myStr 8 12)
+                    (substring myStr 13 16)
+                    (substring myStr 17 20)
+                    (substring myStr 20 32)))))
+
 
 
 ;;; normal emacs customization stuff
