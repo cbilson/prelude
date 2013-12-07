@@ -4,8 +4,8 @@
     (setq ls-lisp-use-insert-directory-program t
           insert-directory-program "gls")
 
-    (set-frame-font "-outline-Consolas-normal-r-normal-normal-18-97-96-96-c-*-iso8859-1")
-
+    (set-frame-font "-outline-Consolas-normal-r-normal-normal-12-97-96-96-c-*-iso8859-1")
+    
     (defun copy-from-osx ()
       (shell-command-to-string "pbpaste"))
 

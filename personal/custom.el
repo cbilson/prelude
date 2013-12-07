@@ -90,6 +90,11 @@
                 ("\\.aspx$" . html-mode)
                 ("\\.cljs$" . clojurescript-mode)
                 ("\\.config$" . xml-mode)
+                ("\\.proj$" . xml-mode)
+                ("\\.csproj$" . xml-mode)
+                ("\\.fsproj$" . xml-mode)
+                ("\\.targets$" . xml-mode)
+                ("\\.props$" . xml-mode)
                 ("\\.cs$" . csharp-mode)
                 ("\\.cshtml$" . html-mode)
                 ("\\.csman$" . xml-mode)
@@ -233,11 +238,12 @@
      (define-key paredit-mode-map (kbd "C-c (") 'paredit-backward-slurp-sexp)
      (define-key paredit-mode-map (kbd "M-R") 'paredit-splice-sexp-killing-backward)))
 
+(setq my-snippets-dir (concat (file-name-as-directory prelude-personal-dir)
+                              "snippets"))
+
 (eval-after-load "yasnippet" 
   '(progn
-     (let* ((customizations (file-name-as-directory prelude-personal-dir))
-            (custom-snippets (concat customizations "snippets")))
-       (add-to-list 'yas-snippet-dirs custom-snippets))))
+     (add-to-list 'yas-snippet-dirs my-snippets-dir)))
 
 (eval-after-load "lisp-mode"
   '(progn
@@ -416,11 +422,6 @@
        (compile "make test"))
 
      (require 'yasnippet)
-
-     (let ((snip-dir (expand-file-name "csharp-mode" yas-snippet-dirs)))
-       (make-directory snip-dir t)
-       (add-to-list 'yas-snippet-dirs snip-dir t)
-       (yas-load-directory snip-dir))
 
      (define-key csharp-mode-map (kbd "C-c ,") 'w-unit-test)
      (define-key csharp-mode-map (kbd "C-c C-k") 'csharp-makefile-compile)
