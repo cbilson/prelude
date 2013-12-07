@@ -19,24 +19,24 @@
 ;; base packages I want on all machines
 (prelude-require-packages
  '(cider clojure-cheatsheet clojure-mode clojurescript-mode
-   coffee-mode csv-mode ctags ctags-update cyberpunk-theme
-   dired-details
-   editorconfig elein elisp-slime-nav emmet-mode ensime ess
-   feature-mode
-   git-gutter+ google-c-style goto-chg
-   htmlize
-   idle-highlight-mode iedit
-   js-comint
-   kibit-mode
-   loccur
-   markdown-mode multiple-cursors
-   org org-magit
-   paredit plantuml-mode powershell-mode pp-c-l
-   rbenv
-   s scala-mode2 slamhound smex
-   twittering-mode
-   wrap-region
-   w3m))
+         coffee-mode csv-mode ctags ctags-update cyberpunk-theme
+         dired-details
+         editorconfig elein elisp-slime-nav emmet-mode ensime ess
+         feature-mode
+         git-gutter+ google-c-style goto-chg
+         htmlize
+         idle-highlight-mode iedit
+         js-comint
+         kibit-mode
+         loccur
+         markdown-mode multiple-cursors
+         org org-magit
+         paredit plantuml-mode powershell-mode pp-c-l
+         rbenv
+         s scala-mode2 slamhound smex
+         twittering-mode
+         wrap-region
+         w3m))
 
 ;; some modes that don't have working autoloads of their own
 (autoload 'loccur-current "loccur")
@@ -241,7 +241,7 @@
 (setq my-snippets-dir (concat (file-name-as-directory prelude-personal-dir)
                               "snippets"))
 
-(eval-after-load "yasnippet" 
+(eval-after-load "yasnippet"
   '(progn
      (add-to-list 'yas-snippet-dirs my-snippets-dir)))
 
@@ -311,10 +311,10 @@
      (defun clojurescript-repl-listen (dir)
        (interactive (list default-directory))
        (inferior-lisp (format "cd %s && lein trampoline cljsbuild repl-listen" dir)))
-     
+
      (add-hook 'clojurescript-mode-hook 'paredit)
      (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)
-     
+
      (require 'yasnippet)))
 
 (eval-after-load "cider"
@@ -430,7 +430,7 @@
      (c-lang-defconst c-other-block-decl-kwds
        csharp nil)))
 
-;;; 
+;;;
 ;;; markup languages
 ;;;
 
@@ -460,19 +460,70 @@
 
 (setq plantuml-jar-path (concat (file-name-as-directory prelude-vendor-dir)
                                 "plantuml.jar"))
-(setq org-plantuml-jar-path plantuml-jar-path)
 
 
-;;; 
+;;;
 ;;;  org-mode
-;;; 
+;;;
 (eval-after-load "org"
   '(progn
+     <<<<<<< HEAD
 
      ;; for some reason (htmlize?) I get errors in org unless I have flymake
      (require 'flymake)
-     
+
+     =======
+     (setq org-plantuml-jar-path plantuml-jar-path)
+
+     >>>>>>> 3d5a250... various nefarious hacks to try and get my plantuml diagrams into ODT files
      (add-hook 'org-mode-hook 'auto-fill-mode)
+
+     ;; enable exporting EMF files
+     (setq org-export-default-inline-image-rule
+           `(("file" .
+              ,(format "\\.%s\\'"
+                       (regexp-opt
+                        '("png" "jpeg" "jpg" "gif" "tiff" "tif" "xbm"
+                          "xpm" "pbm" "pgm" "ppm" "emf") t)))))
+
+     (setq org-odt-inline-image-rules
+           '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|emf\\)\\'")))
+
+     ;; for some reason I get an error if flymake mode isn't loaded
+     ;; when exporting ODTs
+     (require 'flymake)
+
+     ;; fix plantuml to export EMFs
+     (defun org-babel-execute:plantuml (body params)
+       "Execute a block of plantuml code with org-babel. This function is called by `org-babel-execute-src-block'."
+       (let* ((result-params (split-string (or (cdr (assoc :results params)) "")))
+              (out-file (or (cdr (assoc :file params))
+                            (error "PlantUML requires a \":file\" header argument")))
+              (cmdline (cdr (assoc :cmdline params)))
+              (in-file (org-babel-temp-file "plantuml-"))
+              (java (or (cdr (assoc :java params)) ""))
+              (cmd (if (string= "" org-plantuml-jar-path)
+                       (error "`org-plantuml-jar-path' is not set")
+                     (concat "java " java " -jar "
+                             (shell-quote-argument
+                              (expand-file-name org-plantuml-jar-path))
+                             (if (string= (file-name-extension out-file) "svg")
+                                 " -tsvg" "")
+                             (if (string= (file-name-extension out-file) "eps")
+                                 " -teps" "")
+                             (if (string= (file-name-extension out-file) "emf")
+                                 " -temf" "")
+                             " -p " cmdline " < "
+                             (org-babel-process-file-name in-file)
+                             " > "
+                             (org-babel-process-file-name out-file)))))
+         (unless (file-exists-p org-plantuml-jar-path)
+           (error "Could not find plantuml.jar at %s" org-plantuml-jar-path))
+         (with-temp-file in-file (insert (concat "@startuml\n" body "\n@enduml")))
+         (message "%s" cmd) (org-babel-eval cmd "")
+         nil)) ;; signal that output has already been written to file
+
+     (setq org-odt-pixels-per-inch 300.00)
 
      (setq org-todo-keywords '((sequence "BACKLOG(b!)" "READY(r!)" "TODAY(t!)"
                                          "DOING(d!)" "|" "DONE(n!)" "CANCELLED(x!)"
@@ -549,7 +600,7 @@
 
 (eval-after-load "ob-plantuml"
   '(progn
-     (setq org-plantuml-jar-path (expand-path "c:/tools/plantuml.jar"))))g
+     (setq org-plantuml-jar-path (expand-path "c:/tools/plantuml.jar"))))
 
 
 ;;;
@@ -795,7 +846,7 @@
                             (buffer-string)
                             (random)
                             (recent-keys)))))
-    
+
     (insert (format "%s-%s-4%s-a%s-%s"
                     (substring myStr 0 8)
                     (substring myStr 8 12)
