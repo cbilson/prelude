@@ -438,6 +438,11 @@
 (eval-after-load "html-mode"
   '(progn
      (add-hook 'html-mode-hook 'emmet-mode)))
+
+(setq plantuml-jar-path (concat (file-name-as-directory prelude-vendor-dir)
+                                "plantuml.jar"))
+(setq org-plantuml-jar-path plantuml-jar-path)
+
 
 ;;; 
 ;;;  org-mode
@@ -490,6 +495,7 @@
         (js . t)
         (ledger . t)
         (octave . t)
+        (plantuml . t)
         (python . t)
         (R . t)
         (scala . t)
