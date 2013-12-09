@@ -467,15 +467,9 @@
 ;;;
 (eval-after-load "org"
   '(progn
-     <<<<<<< HEAD
-
      ;; for some reason (htmlize?) I get errors in org unless I have flymake
      (require 'flymake)
 
-     =======
-     (setq org-plantuml-jar-path plantuml-jar-path)
-
-     >>>>>>> 3d5a250... various nefarious hacks to try and get my plantuml diagrams into ODT files
      (add-hook 'org-mode-hook 'auto-fill-mode)
 
      ;; enable exporting EMF files
@@ -600,7 +594,7 @@
 
 (eval-after-load "ob-plantuml"
   '(progn
-     (setq org-plantuml-jar-path (expand-path "c:/tools/plantuml.jar"))))
+     (setq org-plantuml-jar-path plantuml-jar-path)))
 
 
 ;;;
