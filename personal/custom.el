@@ -62,6 +62,7 @@
 (helm-mode +1)
 (blink-cursor-mode +1)
 (load-theme 'cyberpunk t)
+(yas-global-mode +1)
 
 ;;; projectile
 (projectile-global-mode +1)
@@ -243,7 +244,8 @@
 
 (eval-after-load "yasnippet"
   '(progn
-     (add-to-list 'yas-snippet-dirs my-snippets-dir)))
+     (add-to-list 'yas-snippet-dirs my-snippets-dir)
+     (yas/load-directory my-snippets-dir)))
 
 (eval-after-load "lisp-mode"
   '(progn
@@ -261,11 +263,9 @@
 (eval-after-load "clojure-mode"
   '(progn
      (require 'clojure-cheatsheet)
-     (require 'yasnippet)
 
      (add-hook 'clojure-mode-hook 'paredit-mode)
-     (add-hook 'clojure-mode-hook 'yas-minor-mode)
-     
+
      (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)
      (define-key clojure-mode-map (kbd "RET") 'paredit-newline)
      (defun helm-clojure-headlines ()
@@ -281,9 +281,6 @@
 
 (eval-after-load "clojurescript"
   '(progn
-     (require 'yasnippet)
-
-     (add-hook 'clojurescript-mode-hook 'yas-minor-mode)
      (add-hook 'clojurescript-mode-hook 'paredit)
 
      (defun clojurescript-run-cljsbuild (dir)
@@ -323,10 +320,6 @@
 
 (eval-after-load "cider"
   '(progn
-     (require 'yasnippet)
-
-     (add-hook 'cider-mode-hook 'yas-minor-mode)
-
      (add-hook 'cider-mode-hook 'paredit-mode)
      (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
@@ -372,9 +365,6 @@
 
 (eval-after-load "c-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'c-mode-hook 'yas-minor-mode)
-     
      (define-key c-mode-map (kbd "C-c C-k") 'compile)
      (add-hook 'c-mode-common-hook 'google-set-c-style)
      (add-hook 'c-mode-common-hook 'google-make-newline-indent)
@@ -382,9 +372,6 @@
 
 (eval-after-load "cc-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'cc-mode-hook 'yas-minor-mode)
-
      (define-key c-mode-base-map (kbd "C-c C-k") 'compile)
      (add-hook 'c-mode-common-hook 'google-set-c-style)
      (add-hook 'c-mode-common-hook 'google-make-newline-indent)
@@ -398,9 +385,6 @@
 ;;; python stuff
 (eval-after-load "python-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'python-mode-hook 'yas-minor-mode)
-
      (setq
       python-shell-interpreter "ipython"
       python-shell-interpreter-args ""
@@ -413,9 +397,6 @@
 ;;; scala stuff
 (eval-after-load "scala-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'scala-mode-hook 'yas-minor-mode)
-
      (require 'scala-mode2)
      ;;(require 'ensime)
      (defun my-scala-mode-hook ()
@@ -427,9 +408,6 @@
 ;;; powershell
 (eval-after-load "powershell-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'powershell-mode-hook 'yas-minor-mode)
-     
      (setq
       powershell-indent 2
       powershell-continuation-indent 2)
@@ -438,9 +416,6 @@
 ;;; csharp-mode
 (eval-after-load 'csharp-mode
   '(progn
-     (require 'yasnippet)
-     (add-hook 'csharp-mode-hook 'yas-minor-mode)
-     
      (defun csharp-makefile-compile ()
        (interactive)
        (cd (locate-dominating-file default-directory "Makefile"))
@@ -451,7 +426,7 @@
      (define-key csharp-mode-map (kbd "{") 'c-electric-brace)
 
      (c-lang-defconst c-other-block-decl-kwds
-       csharp nil)))
+                      csharp nil)))
 
 ;;;
 ;;; markup languages
@@ -465,33 +440,20 @@
 
 (eval-after-load "sgml-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'sgml-mode-hook 'yas-minor-mode)
-     
      (add-hook 'sgml-mode-hook 'emmet-mode)
      (define-key sgml-mode-map (kbd "RET") 'newline-and-indent)))
 
 (eval-after-load "nxml-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'nxml-mode-hook 'yas-minor-mode)
-
      (add-hook 'nxml-mode-hook 'emmet-mode)
      (define-key nxml-mode-map (kbd "RET") 'newline-and-indent)))
 
 (eval-after-load "css-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'css-mode-hook 'yas-minor-mode)
-     
      (add-hook 'css-mode-hook 'emmet-mode)))
 
 (eval-after-load "html-mode"
   '(progn
-     (require 'yasnippet)
-     (add-hook 'html-mode-hook 'yas-minor-mode)
-     
-     
      (add-hook 'html-mode-hook 'emmet-mode)))
 
 (setq plantuml-jar-path (concat (file-name-as-directory prelude-vendor-dir)
