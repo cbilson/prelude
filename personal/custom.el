@@ -260,7 +260,12 @@
 ;;; Clojure Stuff
 (eval-after-load "clojure-mode"
   '(progn
+     (require 'clojure-cheatsheet)
+     (require 'yasnippet)
+
      (add-hook 'clojure-mode-hook 'paredit-mode)
+     (add-hook 'clojure-mode-hook 'yas-minor-mode)
+     
      (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)
      (define-key clojure-mode-map (kbd "RET") 'paredit-newline)
      (defun helm-clojure-headlines ()
@@ -272,13 +277,15 @@
 
      (defun elein-deps ()
        (interactive)
-       (elein-run-cmd "deps"))
-
-     (require 'clojure-cheatsheet)
-     (require 'yasnippet)))
+       (elein-run-cmd "deps"))))
 
 (eval-after-load "clojurescript"
   '(progn
+     (require 'yasnippet)
+
+     (add-hook 'clojurescript-mode-hook 'yas-minor-mode)
+     (add-hook 'clojurescript-mode-hook 'paredit)
+
      (defun clojurescript-run-cljsbuild (dir)
        (interactive (list default-directory))
        (when (get-buffer "*lein-cljsbuild*")
@@ -312,23 +319,13 @@
        (interactive (list default-directory))
        (inferior-lisp (format "cd %s && lein trampoline cljsbuild repl-listen" dir)))
 
-     (add-hook 'clojurescript-mode-hook 'paredit)
-     (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)
-
-     (require 'yasnippet)))
+     (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)))
 
 (eval-after-load "cider"
   '(progn
+     (require 'yasnippet)
 
-     (setq cider-use-pretty-printing t
-           cider-popup-stacktraces t
-           cider-repl-popup-stacktraces t
-           cider-auto-select-error-buffer nil
-           cider-repl-display-in-current-window t
-           cider-repl-wrap-history t
-           cider-repl-history-file (expand-file-name "~/.emacs.d/personal/.cider-history")
-           nrepl-hide-special-buffers t
-           cider-repl-pop-to-buffer-on-connect nil)
+     (add-hook 'cider-mode-hook 'yas-minor-mode)
 
      (add-hook 'cider-mode-hook 'paredit-mode)
      (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
@@ -339,6 +336,16 @@
      (add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
 
      (add-to-list 'same-window-buffer-names "*cider*")
+
+     (setq cider-use-pretty-printing t
+           cider-popup-stacktraces t
+           cider-repl-popup-stacktraces t
+           cider-auto-select-error-buffer nil
+           cider-repl-display-in-current-window t
+           cider-repl-wrap-history t
+           cider-repl-history-file (expand-file-name "~/.emacs.d/personal/.cider-history")
+           nrepl-hide-special-buffers t
+           cider-repl-pop-to-buffer-on-connect nil)
 
      ;; if the vendor directory has cider-inspect, set that up
      (let ((inspect-dir (expand-file-name  "cider-inspect" prelude-vendor-dir)))
@@ -365,6 +372,9 @@
 
 (eval-after-load "c-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'c-mode-hook 'yas-minor-mode)
+     
      (define-key c-mode-map (kbd "C-c C-k") 'compile)
      (add-hook 'c-mode-common-hook 'google-set-c-style)
      (add-hook 'c-mode-common-hook 'google-make-newline-indent)
@@ -372,6 +382,9 @@
 
 (eval-after-load "cc-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'cc-mode-hook 'yas-minor-mode)
+
      (define-key c-mode-base-map (kbd "C-c C-k") 'compile)
      (add-hook 'c-mode-common-hook 'google-set-c-style)
      (add-hook 'c-mode-common-hook 'google-make-newline-indent)
@@ -385,6 +398,9 @@
 ;;; python stuff
 (eval-after-load "python-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'python-mode-hook 'yas-minor-mode)
+
      (setq
       python-shell-interpreter "ipython"
       python-shell-interpreter-args ""
@@ -397,6 +413,9 @@
 ;;; scala stuff
 (eval-after-load "scala-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'scala-mode-hook 'yas-minor-mode)
+
      (require 'scala-mode2)
      ;;(require 'ensime)
      (defun my-scala-mode-hook ()
@@ -408,6 +427,9 @@
 ;;; powershell
 (eval-after-load "powershell-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'powershell-mode-hook 'yas-minor-mode)
+     
      (setq
       powershell-indent 2
       powershell-continuation-indent 2)
@@ -416,12 +438,13 @@
 ;;; csharp-mode
 (eval-after-load 'csharp-mode
   '(progn
+     (require 'yasnippet)
+     (add-hook 'csharp-mode-hook 'yas-minor-mode)
+     
      (defun csharp-makefile-compile ()
        (interactive)
        (cd (locate-dominating-file default-directory "Makefile"))
        (compile "make test"))
-
-     (require 'yasnippet)
 
      (define-key csharp-mode-map (kbd "C-c ,") 'w-unit-test)
      (define-key csharp-mode-map (kbd "C-c C-k") 'csharp-makefile-compile)
@@ -442,20 +465,33 @@
 
 (eval-after-load "sgml-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'sgml-mode-hook 'yas-minor-mode)
+     
      (add-hook 'sgml-mode-hook 'emmet-mode)
      (define-key sgml-mode-map (kbd "RET") 'newline-and-indent)))
 
 (eval-after-load "nxml-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'nxml-mode-hook 'yas-minor-mode)
+
      (add-hook 'nxml-mode-hook 'emmet-mode)
      (define-key nxml-mode-map (kbd "RET") 'newline-and-indent)))
 
 (eval-after-load "css-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'css-mode-hook 'yas-minor-mode)
+     
      (add-hook 'css-mode-hook 'emmet-mode)))
 
 (eval-after-load "html-mode"
   '(progn
+     (require 'yasnippet)
+     (add-hook 'html-mode-hook 'yas-minor-mode)
+     
+     
      (add-hook 'html-mode-hook 'emmet-mode)))
 
 (setq plantuml-jar-path (concat (file-name-as-directory prelude-vendor-dir)
@@ -482,10 +518,6 @@
 
      (setq org-odt-inline-image-rules
            '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|emf\\)\\'")))
-
-     ;; for some reason I get an error if flymake mode isn't loaded
-     ;; when exporting ODTs
-     (require 'flymake)
 
      ;; fix plantuml to export EMFs
      (defun org-babel-execute:plantuml (body params)
