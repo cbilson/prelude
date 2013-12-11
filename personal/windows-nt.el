@@ -1,4 +1,4 @@
-(when (string-equal system-name "DEV-CONTRACT5")
+(when (eq system-type 'windows-nt)
   (progn
 
     (defvar consolas "-outline-Consolas-normal-r-normal-normal-18-97-96-96-c-*-iso8859-1")
@@ -9,18 +9,18 @@
           'browse-url-default-windows-browser)
 
     ;; customize org-file locations
-    (setq org-directory "C:/Users/bilsonc/Dropbox/Calico"
-          my-refile "C:/Users/bilsonc/Dropbox/Calico/CalicoLog.org"
-          my-kanban "C:/Users/bilsonc/Dropbox/Calico/CalicoLog.org"
-          my-notes-file "C:/Users/bilsonc/Dropbox/Calico/CalicoLog.org"
-          my-agenda-files '("C:/Users/bilsonc/Dropbox/Calico/"))
+    (setq org-directory "C:/Users/cbilson/Documents"
+          my-refile "C:/Users/cbilson/Documents/Log.org"
+          my-kanban "C:/Users/cbilson/Documents/Log.org"
+          my-notes-file "C:/Users/cbilson/Documents/Log.org"
+          my-agenda-files '("C:/Users/cbilson/Documents/"))
 
     ;; windows aspell stuff
     (add-to-list 'exec-path "C:\\Program Files (x86)\\Aspell\\bin")
     (setq ispell-program-name "aspell.exe")
     (setq ispell-aspell-data-dir "C:\\Program Files (x86)\\Aspell\\data")
     (setq ispell-aspell-dict-dir "C:\\Program Files (x86)\\Aspell\\dict")
-    (setq ispell-personal-dictionary "C:/Users/bilsonc/.ispell")
+    (setq ispell-personal-dictionary "C:/Users/cbilson/.ispell")
     (require 'ispell)
     (add-to-list 'ispell-local-dictionary-alist '("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil
                                                   ("-B")
