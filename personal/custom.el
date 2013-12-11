@@ -18,7 +18,7 @@
 
 ;; base packages I want on all machines
 (prelude-require-packages
- '(cider clojure-cheatsheet clojure-mode clojurescript-mode
+ '(cider clojure-cheatsheet clojure-mode
          coffee-mode csv-mode ctags ctags-update cyberpunk-theme
          dired-details
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
@@ -36,7 +36,8 @@
          s scala-mode2 slamhound smex
          twittering-mode
          wrap-region
-         w3m))
+         w3m
+         yasnippet))
 
 ;; some modes that don't have working autoloads of their own
 (autoload 'loccur-current "loccur")
@@ -62,6 +63,8 @@
 (helm-mode +1)
 (blink-cursor-mode +1)
 (load-theme 'cyberpunk t)
+
+(require 'yasnippet)
 (yas-global-mode +1)
 
 ;;; projectile
