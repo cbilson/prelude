@@ -107,6 +107,7 @@
                 ("\\.rels$" . xml-mode)
                 ("\\.m$" . octave-mode)
                 ("\\.ps1$" . powershell-mode)
+                ("\\.psm1$" . powershell-mode)
                 ("\\.R$" . r-mode)
                 ("\\.r$" . r-mode)
                 ("\\.spark$" . html-mode))))
