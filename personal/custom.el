@@ -186,6 +186,10 @@
 
 (define-key helm-find-files-map (kbd "C-c DEL") 'helm-ff-run-toggle-auto-update)
 
+;;; make it easier to use ag
+(define-key projectile-mode-map (concat projectile-keymap-prefix "a") 'projectile-ag)
+(define-key projectile-mode-map (concat projectile-keymap-prefix "A") 'projectile-ack)
+
 (define-minor-mode my-keys-minor-mode
   "Minor mode for my keybindings"
   t " my-keys" 'my-keys-minor-mode-map)
