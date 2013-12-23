@@ -1,4 +1,3 @@
-
 *.elc
 *.orig
 *~
@@ -39,4 +38,4 @@ session*
 .cask
 tramp
 url
-
+/server/server
