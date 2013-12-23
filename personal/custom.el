@@ -18,7 +18,8 @@
 
 ;; base packages I want on all machines
 (prelude-require-packages
- '(cider clojure-cheatsheet clojure-mode
+ '(cider ag
+         clojure-cheatsheet clojure-mode
          coffee-mode csv-mode ctags ctags-update cyberpunk-theme
          dired-details
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
