@@ -93,7 +93,9 @@
       (append auto-mode-alist
               '(("\\.asm$" . nasm-mode)
                 ("\\.aspx$" . html-mode)
+                ("\\.bat$" . cmd-mode)
                 ("\\.cljs$" . clojurescript-mode)
+                ("\\.cmd$" . cmd-mode)
                 ("\\.config$" . xml-mode)
                 ("\\.proj$" . xml-mode)
                 ("\\.csproj$" . xml-mode)
