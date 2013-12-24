@@ -40,6 +40,13 @@
     (add-to-list 'load-path (expand-file-name "~/src/emacs-stuff/org-octopress"))
     (add-to-list 'load-path (expand-file-name "~/src/emacs-stuff/google-translate"))
 
+    (require 'org-octopress)
+    (setq org-octopress-directory-top       "~/src/blog-stuff/blog/source"
+          org-octopress-directory-posts     "~/src/blog-stuff/blog/source/_posts"
+          org-octopress-directory-org-top   "~/src/blog-stuff/blog/source"
+          org-octopress-directory-org-posts "~/src/blog-stuff/blog/source/blog"
+          org-octopress-setup-file          "~/src/blog-stuff/blog/setup.org")
+
     (require 'mu4e)
 
     (defalias 'mm 'mu4e)
