@@ -23,7 +23,7 @@
          coffee-mode csv-mode ctags ctags-update cyberpunk-theme
          dired-details
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
-         feature-mode
+         feature-mode fsharp-mode
          git-gutter+ google-c-style goto-chg
          htmlize
          idle-highlight-mode iedit
@@ -97,14 +97,16 @@
                 ("\\.cljs$" . clojurescript-mode)
                 ("\\.cmd$" . cmd-mode)
                 ("\\.config$" . xml-mode)
-                ("\\.proj$" . xml-mode)
-                ("\\.csproj$" . xml-mode)
-                ("\\.fsproj$" . xml-mode)
-                ("\\.targets$" . xml-mode)
-                ("\\.props$" . xml-mode)
                 ("\\.cs$" . csharp-mode)
                 ("\\.cshtml$" . html-mode)
                 ("\\.csman$" . xml-mode)
+                ("\\.csproj$" . xml-mode)
+                ("\\.fs$" . fsharp-mode)
+                ("\\.fsx$" . fsharp-mode)
+                ("\\.fsproj$" . xml-mode)
+                ("\\.targets$" . xml-mode)
+                ("\\.props$" . xml-mode)
+                ("\\.proj$" . xml-mode)
                 ("\\.rd$" . xml-mode)
                 ("\\.rdsc$" . xml-mode)
                 ("\\.rels$" . xml-mode)
