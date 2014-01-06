@@ -429,17 +429,19 @@
 ;;; csharp-mode
 (eval-after-load 'csharp-mode
   '(progn
-     (defun csharp-makefile-compile ()
-       (interactive)
-       (cd (locate-dominating-file default-directory "Makefile"))
-       (compile "make test"))
+     ;; (defun csharp-makefile-compile ()
+     ;;   (interactive)
+     ;;   (cd (locate-dominating-file default-directory "Makefile"))
+     ;;   (compile "make test"))
 
      (define-key csharp-mode-map (kbd "C-c ,") 'w-unit-test)
      (define-key csharp-mode-map (kbd "C-c C-k") 'csharp-makefile-compile)
      (define-key csharp-mode-map (kbd "{") 'c-electric-brace)
 
-     (c-lang-defconst c-other-block-decl-kwds
-                      csharp nil)))
+     ;; (c-lang-defconst c-other-block-decl-kwds
+     ;;                  csharp nil)
+     )
+  )
 
 ;;;
 ;;; markup languages

@@ -1,6 +1,8 @@
 (when (eq system-type 'windows-nt)
   (progn
 
+    (require 's)
+
     (defvar consolas "-outline-Consolas-normal-r-normal-normal-18-97-96-96-c-*-iso8859-1")
 
     (set-default-font consolas)
@@ -35,9 +37,34 @@
 
     (eval-after-load "org"
       '(progn
-         (org-add-link-type "tfs" 'org-open-tfs)))))
+         (org-add-link-type "tfs" 'org-open-tfs))))
 
 ;;; Other stuff to do on windows boxes
+  ;; (setq ag-executable "C:/Users/cbilson/AppData/Local/scoop/apps/ag/0.18.1-1106/ag.exe")
+  (defvar powershell-exe "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")
+
+  (defun powershell-path ()
+    (let* ((command (s-join " " (list powershell-exe
+                                      "-ExecutionPolicy" "Unrestricted"
+                                      "-Command" "$env:PATH")))
+           (path (shell-command-to-string command))
+           (cleaned-path (s-trim path)))
+      cleaned-path))
+
+  ;; (funcall 'powershell-path)
+
+  (defun set-path (path-fun)
+    (let* ((path (funcall path-fun))
+           (emacsy-path  (s-replace "\\" "/" path)))
+      (setenv "PATH" path)
+      (set 'exec-path (split-string emacsy-path ";"))))
+
+  (set-path 'powershell-path)
+
+  ;; (require 'ag)
+  ;; (ag/search "foo" "D:\\src")
+
 ;;; 1) Install Chocolatey
 ;;; 2) cinst Everything
 
+  )
