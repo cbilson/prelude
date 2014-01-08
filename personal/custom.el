@@ -442,6 +442,11 @@
      ;;                  csharp nil)
      )
   )
+
+(eval-after-load 'fsharp-load
+  '(progn
+     (define-key fsharp-mode-map (kbd "C-c C-l") 'fsharp-load-buffer-file)
+     ))
 
 ;;;
 ;;; markup languages
