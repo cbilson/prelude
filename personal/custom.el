@@ -112,14 +112,11 @@
                 ("\\.fsproj$" . xml-mode)
                 ("\\.targets$" . xml-mode)
                 ("\\.props$" . xml-mode)
-<<<<<<< HEAD
                 ("\\.proj$" . xml-mode)
-=======
                 ("\\.cs$" . csharp-mode)
                 ("\\.csx$" . csharp-mode)
                 ("\\.cshtml$" . html-mode)
                 ("\\.csman$" . xml-mode)
->>>>>>> add csx as extension for csharp-mode
                 ("\\.rd$" . xml-mode)
                 ("\\.rdsc$" . xml-mode)
                 ("\\.rels$" . xml-mode)
