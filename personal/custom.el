@@ -368,7 +368,16 @@
        (when (file-exists-p inspect-dir)
          (add-to-list 'load-path inspect-dir)
          (require 'cider-inspect)
-         (define-key cider-mode-map (kbd "C-c i") 'cider-inspect)))))
+         (define-key cider-mode-map (kbd "C-c i") 'cider-inspect)))
+
+     (defun nrepl-reset ()
+       "Calls the reset function in the user namespace 
+        (see Stuart Sierra's \"*Reloaded*\" blog past."
+       (interactive)
+       (cider-eval-and-get-value "(user/reset)"))
+
+     (define-key clojure-mode-map (kbd "C-c M-r") 'nrepl-reset)
+     (define-key cider-mode-map (kbd "C-c M-r") 'nrepl-reset)))
 
 (eval-after-load "elein"
   '(progn
