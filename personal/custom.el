@@ -37,6 +37,7 @@
          kibit-mode
          loccur
          markdown-mode multiple-cursors
+         nrepl-discover
          org org-magit
          page-break-lines paredit plantuml-mode powershell-mode pp-c-l
          rbenv
