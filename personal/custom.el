@@ -96,6 +96,8 @@
 (setq auto-mode-alist
       (remove (rassoc 'asm-mode auto-mode-alist) auto-mode-alist))
 
+(require 'cmd-mode)
+
 (setq auto-mode-alist
       (append auto-mode-alist
               '(("\\.asm$" . nasm-mode)
