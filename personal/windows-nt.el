@@ -10,6 +10,9 @@
     (setq browse-url-browser-function
           'browse-url-default-windows-browser)
 
+    (setq projectile-indexing-method 'native
+          projectile-enable-caching t)
+
     ;; customize org-file locations
     (setq org-directory "C:/Users/cbilson/Documents"
           my-refile "C:/Users/cbilson/Documents/Log.org"
