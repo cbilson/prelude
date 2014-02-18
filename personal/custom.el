@@ -18,8 +18,8 @@
 
 ;; base packages I want on all machines
 (prelude-require-packages
- '(cider ag
-         clojure-cheatsheet clojure-mode
+ '(cider ag ample-theme
+         clojure-cheatsheet clojure-mode clojure-test-mode
          coffee-mode csv-mode ctags ctags-update cyberpunk-theme
          dired-details
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
@@ -64,7 +64,7 @@
 (display-time-mode +1)
 (helm-mode +1)
 (blink-cursor-mode +1)
-(load-theme 'cyberpunk t)
+(load-theme 'ample t)
 
 (require 'yasnippet)
 (yas-global-mode +1)
@@ -925,9 +925,3 @@
  '(vc-annotate-very-old-color "#DC8CC3")
  '(weechat-color-list (quote (unspecified "#002b36" "#073642" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#839496" "#657b83"))))
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
