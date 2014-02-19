@@ -23,7 +23,7 @@
          coffee-mode csv-mode ctags ctags-update cyberpunk-theme
          dired-details
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
-         feature-mode fsharp-mode
+         feature-mode flymake fsharp-mode
          git-gutter+ google-c-style goto-chg
          htmlize
          idle-highlight-mode iedit
@@ -504,7 +504,7 @@
 (eval-after-load "org"
   '(progn
      ;; for some reason (htmlize?) I get errors in org unless I have flymake
-     (require 'flymake)
+     (require 'flymake-mode)
 
      (add-hook 'org-mode-hook 'auto-fill-mode)
 
