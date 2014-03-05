@@ -32,7 +32,7 @@
          loccur
          markdown-mode multiple-cursors
          nrepl-discover
-         org org-magit
+         org org-magit oz
          page-break-lines paredit plantuml-mode powershell-mode pp-c-l
          rbenv
          s scala-mode2 slamhound smex
