@@ -91,6 +91,7 @@
       (remove (rassoc 'asm-mode auto-mode-alist) auto-mode-alist))
 
 (require 'cmd-mode)
+(require 'oz)
 
 (setq auto-mode-alist
       (append auto-mode-alist
@@ -503,9 +504,6 @@
 ;;;
 (eval-after-load "org"
   '(progn
-     ;; for some reason (htmlize?) I get errors in org unless I have flymake
-     (require 'flymake-mode)
-
      (add-hook 'org-mode-hook 'auto-fill-mode)
 
      ;; enable exporting EMF files
