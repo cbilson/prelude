@@ -23,7 +23,7 @@
          coffee-mode csv-mode ctags ctags-update cyberpunk-theme
          dired-details
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
-         feature-mode flymake fsharp-mode
+         feature-mode flx-ido flymake fsharp-mode
          git-gutter+ google-c-style goto-chg
          htmlize
          idle-highlight-mode iedit
