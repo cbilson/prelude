@@ -64,6 +64,8 @@
 
   (set-path 'powershell-path)
 
+  (setq ag-executable "C:/Users/cbilson/appdata/local/scoop/apps/ag/0.18.1-1106/ag.exe")
+
   ;; (require 'ag)
   ;; (ag/search "foo" "D:\\src")
 
