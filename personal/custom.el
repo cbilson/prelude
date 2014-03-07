@@ -35,7 +35,7 @@
          org org-magit oz
          page-break-lines paredit plantuml-mode powershell-mode pp-c-l
          rbenv
-         s scala-mode2 slamhound smex
+         s scala-mode2 slamhound smex sos
          twittering-mode
          wrap-region
          w3m
