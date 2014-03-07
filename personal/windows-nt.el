@@ -68,8 +68,11 @@
 
   ;; (require 'ag)
   ;; (ag/search "foo" "D:\\src")
-
+  ;; (getenv "PATH")
+  
 ;;; 1) Install Chocolatey
 ;;; 2) cinst Everything
+
+  (setq twittering-curl-program "C:/Chocolatey/lib/cmder.portable.1.1.1/tools/cmder/vendor/msysgit/bin/curl.exe")
 
   )
