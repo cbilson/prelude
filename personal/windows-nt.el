@@ -31,6 +31,8 @@
                                                   ("-B")
                                                   nil iso-8859-1))
 
+    (setq delete-by-moving-to-trash t)
+
     ;; TFS stuff
     (defvar *tfs-server* "http://hqvm32:8080")
     (defvar *tfs-root* "/tfs/Calico/EIS")
