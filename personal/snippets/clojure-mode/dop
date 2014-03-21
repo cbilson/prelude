@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: dop
+# key: dop
+# --
+(defn ${1:name}
+  "$1"
+  [context${2: arg}]
+  :${3:get} (url context$2$4)
+  identity)
