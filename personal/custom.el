@@ -58,7 +58,6 @@
 (global-undo-tree-mode 1)
 (global-subword-mode 1)
 (global-git-gutter+-mode)
-(ido-everywhere t)
 (idle-highlight-mode +1)
 (menu-bar-mode -1)
 (display-time-mode +1)
