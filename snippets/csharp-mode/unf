@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: using NUnit.Core
+# key: unf
+# --
+using NUnit.Framework;

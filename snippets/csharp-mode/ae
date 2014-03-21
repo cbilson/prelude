@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Assert equality
+# key: ae
+# --
+Assert.That(${something}, Is.EqualTo(${something else}));

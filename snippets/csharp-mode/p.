@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: property of some type
+# key: p.
+# --
+public ${Type} ${PropertyName} 
+{
+        $0
+}

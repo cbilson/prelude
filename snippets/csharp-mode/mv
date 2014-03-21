@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: void method
+# key: mv
+# --
+${public} void ${MethodName}(${arguments})
+{
+        $0
+}

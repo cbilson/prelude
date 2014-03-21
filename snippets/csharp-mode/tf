@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: test fixture
+# key: tf
+# --
+[TestFixture]
+public class ${FixtureName}
+{
+        $0
+}
