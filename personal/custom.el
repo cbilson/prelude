@@ -11,12 +11,6 @@
 
 (eval-when-compile (require 'cl))
 
-(add-to-list 'package-archives
-             '("marmalade" .
-               "http://marmalade-repo.org/packages/"))
-
-(package-initialize)
-
 
 ;;;
 ;;; Packages
