@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Assert.That(something, Is.False);
+# key: aif
+# --
+Assert.That($0, Is.False);

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: deftest
+# key: t
+# --
+(deftest ${1:something-I-want-to-test}
+  (is (= ${2:expected-value})))

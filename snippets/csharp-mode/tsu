@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: test setup
+# key: tsu
+# --
+[SetUp]
+public void SetUp()
+{
+        $0
+}

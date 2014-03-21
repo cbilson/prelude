@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: method bool
+# key: mb
+# --
+${public} bool ${MethodName}(${arguments})
+{
+        $0
+}

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: using System.Linq
+# key: ulinq
+# --
+using System.Linq;

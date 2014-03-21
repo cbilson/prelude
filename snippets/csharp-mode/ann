@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Assert.That(something, Is.Not.Null)
+# key: ann
+# --
+Assert.That($0, Is.Not.Null);

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: property getter
+# key: get
+# --
+get { $0 }
