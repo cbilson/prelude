@@ -25,7 +25,7 @@
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
          feature-mode flymake fsharp-mode
          git-gutter+ google-c-style goto-chg
-         htmlize
+         helm-projectile htmlize
          idle-highlight-mode iedit
          js-comint
          kibit-mode
