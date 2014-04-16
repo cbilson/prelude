@@ -5,7 +5,7 @@
           insert-directory-program "gls")
 
     (set-frame-font "-outline-Consolas-normal-r-normal-normal-12-97-96-96-c-*-iso8859-1")
-    
+
     (defun copy-from-osx ()
       (shell-command-to-string "pbpaste"))
 
@@ -39,6 +39,18 @@
     (add-to-list 'load-path (expand-file-name "~/src/emacs-stuff/mu/mu4e"))
     (add-to-list 'load-path (expand-file-name "~/src/emacs-stuff/org-octopress"))
     (add-to-list 'load-path (expand-file-name "~/src/emacs-stuff/google-translate"))
+
+    (eval-after-load "fsharp-mode"
+      '(progn
+         (setq inferior-fsharp-program "/Users/cbilson/bin/fsharpi --readline-"
+               fsharp-compiler "/Users/cbilson/bin/fsharpc"
+               fsharp-ac-complete-command
+               (let ((exe (or (executable-find fsharp-ac-executable)
+                              (concat (file-name-directory (or load-file-name buffer-file-name))
+                                      "bin/" fsharp-ac-executable))))
+                 (case system-type
+                   (windows-nt (list exe))
+                   (otherwise (list "/Users/cbilson/bin/mono" exe)))))))
 
     ;; (require 'org-octopress)
     ;; (setq org-octopress-directory-top       "~/src/blog-stuff/blog/source"
