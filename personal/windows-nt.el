@@ -7,6 +7,10 @@
 
     (set-default-font consolas)
 
+    (setq git-gutter+-git-executable "C:/git/bin/git.exe")
+    (eval-after-load "twittering-mode"
+      '(progn
+         (setq twittering-use-master-password nil)))
     (setq browse-url-browser-function
           'browse-url-default-windows-browser)
 
@@ -14,17 +18,17 @@
           projectile-enable-caching t)
 
     ;; customize org-file locations
-    (setq org-directory "C:/Users/cbilson/Documents"
-          my-refile "C:/Users/cbilson/Documents/Log.org"
-          my-kanban "C:/Users/cbilson/Documents/Log.org"
-          my-notes-file "C:/Users/cbilson/Documents/Log.org"
-          my-agenda-files '("C:/Users/cbilson/Documents/"))
+    (setq org-directory "C:/Users/cbilson/OneDrive/org-mode"
+          my-refile "C:/Users/cbilson/OneDrive/org-mode/Log.org"
+          my-kanban "C:/Users/cbilson/OneDrive/org-mode/Log.org"
+          my-notes-file "C:/Users/cbilson/OneDrive/org-mode/Log.org"
+          my-agenda-files '("C:/Users/cbilson/OneDrive/org-mode/"))
 
     ;; windows aspell stuff
-    (add-to-list 'exec-path "C:\\Program Files (x86)\\Aspell\\bin")
+    (add-to-list 'exec-path "C:\\Tools\\Aspell\\bin")
     (setq ispell-program-name "aspell.exe")
-    (setq ispell-aspell-data-dir "C:\\Program Files (x86)\\Aspell\\data")
-    (setq ispell-aspell-dict-dir "C:\\Program Files (x86)\\Aspell\\dict")
+    (setq ispell-aspell-data-dir "C:\\Tools\\Aspell\\data")
+    (setq ispell-aspell-dict-dir "C:\\Tools\\Aspell\\dict")
     (setq ispell-personal-dictionary "C:/Users/cbilson/.ispell")
     (require 'ispell)
     (add-to-list 'ispell-local-dictionary-alist '("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil
@@ -34,15 +38,16 @@
     (setq delete-by-moving-to-trash t)
 
     ;; TFS stuff
-    (defvar *tfs-server* "http://hqvm32:8080")
-    (defvar *tfs-root* "/tfs/Calico/EIS")
+    ;; (defvar *tfs-server* "http://hqvm32:8080")
+    ;; (defvar *tfs-root* "/tfs/Calico/EIS")
 
-    (defun org-open-tfs (item)
-      (browse-url (concat *tfs-server* *tfs-root* "/_workItems#_a=edit&id=" item)))
+    ;; (defun org-open-tfs (item)
+    ;;   (browse-url (concat *tfs-server* *tfs-root* "/_workItems#_a=edit&id=" item)))
 
-    (eval-after-load "org"
-      '(progn
-         (org-add-link-type "tfs" 'org-open-tfs))))
+    ;; (eval-after-load "org"
+    ;;   '(progn
+    ;;      (org-add-link-type "tfs" 'org-open-tfs)))
+    )
 
 ;;; Other stuff to do on windows boxes
   ;; (setq ag-executable "C:/Users/cbilson/AppData/Local/scoop/apps/ag/0.18.1-1106/ag.exe")
@@ -66,7 +71,7 @@
 
   (set-path 'powershell-path)
 
-  (setq ag-executable "C:/Users/cbilson/appdata/local/scoop/apps/ag/0.18.1-1106/ag.exe")
+  ;;(setq ag-executable "C:/Users/cbilson/appdata/local/scoop/apps/ag/0.18.1-1106/ag.exe")
 
   ;; (require 'ag)
   ;; (ag/search "foo" "D:\\src")
@@ -75,6 +80,6 @@
 ;;; 1) Install Chocolatey
 ;;; 2) cinst Everything
 
-  (setq twittering-curl-program "C:/Chocolatey/lib/cmder.portable.1.1.1/tools/cmder/vendor/msysgit/bin/curl.exe")
+  (setq twittering-curl-program "C:/ProgramData/Chocolatey/bin/curl.exe")
 
   )
