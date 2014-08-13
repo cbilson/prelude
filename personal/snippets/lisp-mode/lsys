@@ -1,0 +1,4 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: lsys
+# --
+(asdf:load-system $1)

@@ -42,12 +42,12 @@
 ;; base packages I want on all machines
 (prelude-require-packages
  '(cider ag ample-theme
-         clojure-cheatsheet clojure-mode clojure-test-mode csharp-mode
-         coffee-mode csv-mode ctags ctags-update cyberpunk-theme
+         cider cider-tracing clojure-mode clojurescript-mode
+         coffee-mode csharp-mode csv-mode ctags ctags-update cyberpunk-theme
          dired-details
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
          feature-mode flymake fsharp-mode
-         git-gutter+ google-c-style goto-chg
+         geiser git-gutter+ google-c-style goto-chg
          helm-projectile htmlize
          idle-highlight-mode iedit
          js-comint
@@ -113,6 +113,7 @@
 
 (require 'cmd-mode)
 (require 'oz)
+(require 'flymake)
 
 (setq auto-mode-alist
       (append auto-mode-alist
@@ -130,6 +131,8 @@
                 ("\\.fsx$" . fsharp-mode)
                 ("\\.fsproj$" . xml-mode)
                 ("\\.targets$" . xml-mode)
+                ("\\.ps1xml$" . xml-mode)
+                ("\\.psd1" . powershell-mode)
                 ("\\.props$" . xml-mode)
                 ("\\.proj$" . xml-mode)
                 ("\\.cs$" . csharp-mode)
@@ -231,6 +234,15 @@
 ;;; Code Editing
 ;;;
 
+(defun lisp-mode-stuff ()
+  (define-key geiser-mode-map (kbd "M-;") 'paredit-comment-dwim)
+  (define-key geiser-mode-map (kbd "RET") 'paredit-newline))
+;;; geiser
+(eval-after-load "geiser"
+  '(progn
+     (setq geiser-racket-binary "C:\\Program Files\\Racket\\Racket.exe")
+     (add-hook 'geiser-mode-hook 'paredit-mode)
+     (add-hook 'geiser-mode-hook 'lisp-mode-stuff)))
 ;;; prog-mode
 (eval-after-load "simple"
   '(progn
@@ -383,12 +395,6 @@
            nrepl-hide-special-buffers nil ; t
            cider-repl-pop-to-buffer-on-connect nil)
 
-     ;; if the vendor directory has cider-inspect, set that up
-     (let ((inspect-dir (expand-file-name  "cider-inspect" prelude-vendor-dir)))
-       (when (file-exists-p inspect-dir)
-         (add-to-list 'load-path inspect-dir)
-         (require 'cider-inspect)
-         (define-key cider-mode-map (kbd "C-c i") 'cider-inspect)))
 
      (defun nrepl-reset ()
        "Calls the reset function in the user namespace
@@ -429,9 +435,18 @@
      (add-hook 'c-mode-common-hook 'google-make-newline-indent)
      (setq compilation-read-command nil)))
 
+(defun my-paredit-nonlisp ()
+  "Turn on paredit mode for non-lisps."
+  (interactive)
+  (set (make-local-variable
+        'paredit-space-for-delimiter-predicates)
+       '((lambda (endp delimiter) nil)))
+  (paredit-mode 1))
+;;; javascript
 (eval-after-load "js"
   '(progn
-     (add-hook 'js-mode-hook 'paredit-mode)
+     ;; (add-hook 'js-mode-hook 'paredit-mode)
+     (add-hook 'js-mode-hook 'my-paredit-nonlisp)
      (setq c-basis-offset 2)))
 
 ;;; python stuff
@@ -507,6 +522,7 @@
 (eval-after-load "nxml-mode"
   '(progn
      (add-hook 'nxml-mode-hook 'emmet-mode)
+     (setq nxml-child-indent 2)
      (define-key nxml-mode-map (kbd "RET") 'newline-and-indent)))
 
 (eval-after-load "css-mode"
