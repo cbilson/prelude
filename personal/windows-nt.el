@@ -3,33 +3,46 @@
 
     (require 's)
 
-    (defvar consolas "-outline-Consolas-normal-r-normal-normal-18-97-96-96-c-*-iso8859-1")
+    (setq home-directory
+          (concat (getenv "HOMEDRIVE")
+                  (file-name-as-directory (getenv "HOMEPATH"))))
 
+    ;; customize org-file locations
+    (setq one-drive-directory
+          (cond
+           ((string= system-name "CBILSON-MB") (concat home-directory "OneDrive"))
+           ((string= system-name "CBILSON-WS") (concat home-directory "SkyDrive"))))
+
+    (setq chocolatey-directory (file-name-as-directory (getenv "ChocolateyInstall"))
+          chocolatey-bin-directory (concat chocolatey-directory "bin"))
+
+    (setq org-directory (concat (file-name-as-directory one-drive-directory) "org")
+          my-note-file (concat (file-name-as-directory org-directory) "Log.org")
+          my-refile my-notes-file
+          my-kanban my-notes-file
+          my-agenda-files (list org-directory))
+
+    (defvar consolas "-outline-Consolas-normal-r-normal-normal-18-97-96-96-c-*-iso8859-1")
     (set-default-font consolas)
 
     (setq git-gutter+-git-executable "C:/git/bin/git.exe")
+
     (eval-after-load "twittering-mode"
       '(progn
          (setq twittering-use-master-password nil)))
+
     (setq browse-url-browser-function
           'browse-url-default-windows-browser)
 
     (setq projectile-indexing-method 'native
           projectile-enable-caching t)
 
-    ;; customize org-file locations
-    (setq org-directory "C:/Users/cbilson/OneDrive/org-mode"
-          my-refile "C:/Users/cbilson/OneDrive/org-mode/Log.org"
-          my-kanban "C:/Users/cbilson/OneDrive/org-mode/Log.org"
-          my-notes-file "C:/Users/cbilson/OneDrive/org-mode/Log.org"
-          my-agenda-files '("C:/Users/cbilson/OneDrive/org-mode/"))
-
     ;; windows aspell stuff
     (add-to-list 'exec-path "C:\\Tools\\Aspell\\bin")
-    (setq ispell-program-name "aspell.exe")
+    (setq ispell-program-name "C:\\Tools\\Aspell\\bin\\aspell.exe")
     (setq ispell-aspell-data-dir "C:\\Tools\\Aspell\\data")
     (setq ispell-aspell-dict-dir "C:\\Tools\\Aspell\\dict")
-    (setq ispell-personal-dictionary "C:/Users/cbilson/.ispell")
+    (setq ispell-personal-dictionary (concat home-directory ".ispell"))
     (require 'ispell)
     (add-to-list 'ispell-local-dictionary-alist '("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil
                                                   ("-B")
@@ -47,39 +60,36 @@
     ;; (eval-after-load "org"
     ;;   '(progn
     ;;      (org-add-link-type "tfs" 'org-open-tfs)))
-    )
 
-;;; Other stuff to do on windows boxes
-  ;; (setq ag-executable "C:/Users/cbilson/AppData/Local/scoop/apps/ag/0.18.1-1106/ag.exe")
-  (defvar powershell-exe "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")
 
-  (defun powershell-path ()
-    (let* ((command (s-join " " (list powershell-exe
-                                      "-ExecutionPolicy" "Unrestricted"
-                                      "-Command" "$env:PATH")))
-           (path (shell-command-to-string command))
-           (cleaned-path (s-trim path)))
-      cleaned-path))
+    ;;; Other stuff to do on windows boxes
+    ;; (setq ag-executable "C:/Users/cbilson/AppData/Local/scoop/apps/ag/0.18.1-1106/ag.exe")
+    ;; (defvar powershell-exe "C:\\windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe")
 
-  ;; (funcall 'powershell-path)
+    ;; (defun powershell-path ()
+    ;;   (let* ((command (s-join " " (list powershell-exe
+    ;;                                     "-ExecutionPolicy" "Unrestricted"
+    ;;                                     "-Command" "$env:PATH")))
+    ;;          (path (shell-command-to-string command))
+    ;;          (cleaned-path (s-trim path)))
+    ;;     cleaned-path))
 
-  (defun set-path (path-fun)
-    (let* ((path (funcall path-fun))
-           (emacsy-path  (s-replace "\\" "/" path)))
-      (setenv "PATH" path)
-      (set 'exec-path (split-string emacsy-path ";"))))
+    ;; (funcall 'powershell-path)
 
-  (set-path 'powershell-path)
+    ;; (defun set-path (path-fun)
+    ;;   (let* ((path (funcall path-fun))
+    ;;          (emacsy-path  (s-replace "\\" "/" path)))
+    ;;     (setenv "PATH" path)
+    ;;     (set 'exec-path (split-string emacsy-path ";"))))
 
-  ;;(setq ag-executable "C:/Users/cbilson/appdata/local/scoop/apps/ag/0.18.1-1106/ag.exe")
+    ;; (set-path 'powershell-path)
 
-  ;; (require 'ag)
-  ;; (ag/search "foo" "D:\\src")
-  ;; (getenv "PATH")
-  
-;;; 1) Install Chocolatey
-;;; 2) cinst Everything
+    ;; (require 'ag)
+    ;; (ag/search "foo" "D:\\src")
+    ;; (getenv "PATH")
 
-  (setq twittering-curl-program "C:/ProgramData/Chocolatey/bin/curl.exe")
+    (setq twittering-curl-program (concat chocolatey-bin-directory "curl.exe"))
 
-  )
+    (eval-after-load "geiser"
+      '(progn
+         (setq geiser-racket-binary "C:\\Program Files\\Racket\\Racket.exe")))))

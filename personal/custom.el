@@ -48,14 +48,14 @@
          editorconfig elein elisp-slime-nav emmet-mode ensime ess
          feature-mode flymake fsharp-mode
          geiser git-gutter+ google-c-style goto-chg
-         helm-projectile htmlize
+         helm-projectile helm-ag htmlize
          idle-highlight-mode iedit
          js-comint
          kibit-mode
          loccur
          markdown-mode multiple-cursors
          org org-magit oz
-         page-break-lines paredit plantuml-mode powershell-mode pp-c-l
+         page-break-lines plantuml-mode powershell-mode pp-c-l
          rbenv
          s scala-mode2 smex sos
          troncle twittering-mode
@@ -114,6 +114,8 @@
 (require 'cmd-mode)
 (require 'oz)
 (require 'flymake)
+
+(list 1 2) 3
 
 (setq auto-mode-alist
       (append auto-mode-alist
@@ -217,6 +219,7 @@
 (define-key my-keys-minor-mode-map (kbd "C-c F") 'my-recentf-ido-find-file-other-window)
 (define-key my-keys-minor-mode-map (kbd "C-c |") 'split-window-right)
 (define-key my-keys-minor-mode-map (kbd "C-c _") 'split-window-below)
+(define-key my-keys-minor-mode-map (kbd "C-M-o") 'prelude-smart-open-line-above)
 
 (define-key helm-find-files-map (kbd "C-c DEL") 'helm-ff-run-toggle-auto-update)
 
@@ -229,20 +232,54 @@
   t " my-keys" 'my-keys-minor-mode-map)
 
 (my-keys-minor-mode 1)
+
 
 ;;;
 ;;; Code Editing
 ;;;
 
-(defun lisp-mode-stuff ()
-  (define-key geiser-mode-map (kbd "M-;") 'paredit-comment-dwim)
-  (define-key geiser-mode-map (kbd "RET") 'paredit-newline))
-;;; geiser
-(eval-after-load "geiser"
-  '(progn
-     (setq geiser-racket-binary "C:\\Program Files\\Racket\\Racket.exe")
-     (add-hook 'geiser-mode-hook 'paredit-mode)
-     (add-hook 'geiser-mode-hook 'lisp-mode-stuff)))
+(require 'smartparens)
+(require 'smartparens-config) ; Setup standard configuration
+
+(define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
+(define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
+(define-key smartparens-mode-map (kbd "C-M-u") #'sp-backward-up-sexp)
+(define-key smartparens-mode-map (kbd "C-M-d") #'sp-down-sexp)
+(define-key smartparens-mode-map (kbd "C-M-p") #'sp-backward-down-sexp)
+(define-key smartparens-mode-map (kbd "C-M-n") #'sp-up-sexp)
+
+;; Deleting and killing
+(define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
+(define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
+
+;; Depth changing
+(define-key smartparens-mode-map (kbd "M-s") #'sp-splice-sexp)
+(define-key smartparens-mode-map (kbd "M-<up>") #'sp-splice-sexp-killing-backward)
+(define-key smartparens-mode-map (kbd "M-<down>") #'sp-splice-sexp-killing-forward)
+(define-key smartparens-mode-map (kbd "M-r") #'sp-splice-sexp-killing-around)
+(define-key smartparens-mode-map (kbd "M-?") #'sp-convolute-sexp)
+
+;; Barfage & Slurpage
+(define-key smartparens-mode-map (kbd "C-c )")  #'sp-forward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-)")  #'sp-forward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-}")  #'sp-forward-barf-sexp)
+(define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
+(define-key smartparens-mode-map (kbd "C-(")  #'sp-backward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-c (")  #'sp-backward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-M-<left>") #'sp-backward-slurp-sexp)
+(define-key smartparens-mode-map (kbd "C-{")  #'sp-backward-barf-sexp)
+(define-key smartparens-mode-map (kbd "C-M-<right>") #'sp-backward-barf-sexp)
+
+;; Miscellaneous commands
+(define-key smartparens-mode-map (kbd "M-S") #'sp-split-sexp)
+(define-key smartparens-mode-map (kbd "M-J") #'sp-join-sexp)
+(define-key smartparens-mode-map (kbd "C-M-t") #'sp-transpose-sexp)
+
+(define-key smartparens-strict-mode-map (kbd "M-q") #'sp-indent-defun)
+(define-key smartparens-strict-mode-map (kbd "RET") #'sp-newline)
+(define-key smartparens-strict-mode-map (kbd "M-;") #'sp-comment)
+
 ;;; prog-mode
 (eval-after-load "simple"
   '(progn
@@ -252,10 +289,7 @@
      (add-hook 'prog-mode-hook 'whitespace-mode)
      (add-hook 'prog-mode-hook 'idle-highlight-mode)
      (add-hook 'prog-mode-hook 'rainbow-mode)
-     (add-hook 'prog-mode-hook 'subword-mode)
-
-     (define-key prog-mode-map (kbd "M-;") 'comment-dwim)
-     (define-key prog-mode-map (kbd "RET") 'newline-and-indent)))
+     (add-hook 'prog-mode-hook 'subword-mode)))
 
 ;;; Makefiles
 (eval-after-load "makefile-mode"
@@ -279,20 +313,6 @@
 
      (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
 
-;;; lisp stuff
-(eval-after-load "paredit"
-  '(progn
-     (define-key paredit-mode-map (kbd "M-)") 'paredit-forward-slurp-sexp)
-     (define-key paredit-mode-map (kbd "M-C-(") 'paredit-wrap-round)
-     (define-key paredit-mode-map (kbd "M-C-[") 'paredit-wrap-square)
-     (define-key paredit-mode-map (kbd "M-C-{") 'paredit-wrap-curly)
-     (define-key paredit-mode-map (kbd "M-;") 'paredit-comment-dwim)
-     (define-key paredit-mode-map (kbd "C-c }") 'paredit-forward-barf-sexp)
-     (define-key paredit-mode-map (kbd "C-c {") 'paredit-backward-barf-sexp)
-     (define-key paredit-mode-map (kbd "C-c )") 'paredit-forward-slurp-sexp)
-     (define-key paredit-mode-map (kbd "C-c (") 'paredit-backward-slurp-sexp)
-     (define-key paredit-mode-map (kbd "M-R") 'paredit-splice-sexp-killing-backward)))
-
 (setq my-snippets-dir (concat (file-name-as-directory prelude-personal-dir)
                               "snippets"))
 
@@ -303,14 +323,12 @@
 
 (eval-after-load "lisp-mode"
   '(progn
-     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-     (define-key lisp-interaction-mode-map (kbd "C-x C-e") 'eval-print-last-sexp)
-     (define-key emacs-lisp-mode-map (kbd "M-;") 'paredit-comment-dwim)
-     (define-key emacs-lisp-mode-map (kbd "RET") 'paredit-newline)))
+     (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-last-sexp)
+     (define-key lisp-mode-shared-map (kbd "C-c C-k") 'eval-buffer)
+     (define-key lisp-interaction-mode-map (kbd "C-x C-e") 'eval-print-last-sexp)))
 
 (eval-after-load "ielm"
   '(progn
-     (add-hook 'ielm-mode-hook 'paredit-mode)
      (add-hook 'ielm-mode-hook 'turn-on-elisp-slime-nav-mode)))
 
 ;;; Clojure Stuff
@@ -318,10 +336,6 @@
   '(progn
      ;; (require 'clojure-cheatsheet)
 
-     (add-hook 'clojure-mode-hook 'paredit-mode)
-
-     (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)
-     (define-key clojure-mode-map (kbd "RET") 'paredit-newline)
      (defun helm-clojure-headlines ()
        "Display headlines for the current Clojure file."
        (interactive)
@@ -335,8 +349,6 @@
 
 (eval-after-load "clojurescript"
   '(progn
-     (add-hook 'clojurescript-mode-hook 'paredit)
-
      (defun clojurescript-run-cljsbuild (dir)
        (interactive (list default-directory))
        (when (get-buffer "*lein-cljsbuild*")
@@ -368,18 +380,12 @@
 
      (defun clojurescript-repl-listen (dir)
        (interactive (list default-directory))
-       (inferior-lisp (format "cd %s && lein trampoline cljsbuild repl-listen" dir)))
-
-     (define-key clojure-mode-map (kbd "M-;") 'paredit-comment-dwim)))
+       (inferior-lisp (format "cd %s && lein trampoline cljsbuild repl-listen" dir)))))
 
 (eval-after-load "cider"
   '(progn
-     (add-hook 'cider-mode-hook 'paredit-mode)
      (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-
      (add-hook 'cider-repl-mode-hook 'subword-mode)
-     (add-hook 'cider-repl-mode-hook 'paredit-mode)
-     ;; (add-hook 'cider-repl-mode-hook 'rainbow-delimiters-mode)
      (add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
 
      (add-to-list 'same-window-buffer-names "*cider*")
@@ -394,7 +400,6 @@
            cider-repl-history-file (expand-file-name "~/.emacs.d/personal/.cider-history")
            nrepl-hide-special-buffers nil ; t
            cider-repl-pop-to-buffer-on-connect nil)
-
 
      (defun nrepl-reset ()
        "Calls the reset function in the user namespace
@@ -413,13 +418,7 @@
              (errors (get-buffer-create "*lein test errors*")))
          (bury-buffer output)
          (bury-buffer errors)
-         ;;(elein-burried-shell-command (concat elein-lein " test") buffer)
-         ;;(elein-in-project-root (compile (concat elein-lein " test")))
-         ;;(elein-run-cmd "test")
          (shell-command (concat elein-lein " test") output errors)))))
-
-;; javadoc
-;;(javadoc-add-roots "")
 
 (eval-after-load "c-mode"
   '(progn
@@ -435,18 +434,8 @@
      (add-hook 'c-mode-common-hook 'google-make-newline-indent)
      (setq compilation-read-command nil)))
 
-(defun my-paredit-nonlisp ()
-  "Turn on paredit mode for non-lisps."
-  (interactive)
-  (set (make-local-variable
-        'paredit-space-for-delimiter-predicates)
-       '((lambda (endp delimiter) nil)))
-  (paredit-mode 1))
-;;; javascript
 (eval-after-load "js"
   '(progn
-     ;; (add-hook 'js-mode-hook 'paredit-mode)
-     (add-hook 'js-mode-hook 'my-paredit-nonlisp)
      (setq c-basis-offset 2)))
 
 ;;; python stuff
@@ -687,6 +676,12 @@
                             ("budget" "ledger -f %{ledger-file} --budget --monthly reg '^Expenses' -p 'this month'")))
      (local-set-key (kbd "C-o") 'ledger-occur)))
 
+(eval-after-load "org-tree-slide"
+  '(progn
+     (global-set-key (kbd "<f8>") 'org-tree-slide-mode)
+     (global-set-key (kbd "S-<f8>") 'org-tree-slide-skip-done-toggle)
+     (setq org-tree-slide-slide-in-effect nil)))
+
 ;;;  google-translate
 ;; (defvar *my-language* "English")
 ;; (defvar *learning-language* "Chinese Traditional")
@@ -925,86 +920,42 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(Linum-format "%7i ")
- '(ansi-color-names-vector
-   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
- '(ansi-term-color-vector
-   [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"] t)
+ '(ansi-color-names-vector ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(ansi-term-color-vector [unspecified "#FFFFFF" "#d15120" "#5f9411" "#d2ad00" "#6b82a7" "#a66bab" "#6b82a7" "#505050"] t)
  '(background-color "#202020")
  '(background-mode dark)
  '(canlock-password "cbdcf02760b26ab76b6e750b73c6674d6820b554")
  '(compilation-message-face (quote default))
  '(cursor-color "#cccccc")
- '(custom-enabled-themes (quote (noctilux)))
- '(custom-safe-themes
-   (quote
-    ("0c311fb22e6197daba9123f43da98f273d2bfaeeaeb653007ad1ee77f0003037" "4ea594ee0eb3e5741ab7c4b3eeb36066f795c61aeebad843d74f0a28a81a0352" "2b5aa66b7d5be41b18cc67f3286ae664134b95ccc4a86c9339c886dfd736132d" "18d91d95e20450b0cdab4d7eed600e80c22cc7a4153a87989daa5a1c5aff3b83" "57072d797dc09fcf563051a85a29d6a51d6f2b1a602e029c35b05c30df319b2a" "cea6d15a8333e0c78e1e15a0524000de69aac2afa7bb6cf9d043a2627327844e" "636ecbf1091fbc99d95526d7a3a4810d1ccb58997e58bd3184863821303553f3" "5c674d297206a2494eff9bf650a2ffbb8261d5a2ee77563b8a6530525fec5b6d" "31bfef452bee11d19df790b82dea35a3b275142032e06c6ecdc98007bf12466c" "8bb1e9a22e9e9d405ca9bdf20b91301eba12c0b9778413ba7600e48d2d3ad1fb" "60e70079a187df634db25db4bb778255eaace1ef4309e56389459fb9418b4840" "394504bd559027641b544952d6e9e1c6dcb306b4d1b2c4ad6b98d3e6b5459683" "7a2c92b6267b84ae28a396f24dd832e29a164c1942f1f8b3fe500f1c25f8e09d" "1f3304214265481c56341bcee387ef1abb684e4efbccebca0e120be7b1a13589" "1cf3f29294c5a3509b7eb3ff9e96f8e8db9d2d08322620a04d862e40dc201fe2" "9ea054db5cdbd5baa4cda9d373a547435ba88d4e345f4b06f732edbc4f017dc3" "b8f561a188a77e450ab8a060128244c81dea206f15c1152a6899423dd607b327" "1c1e6b2640daffcd23b1f7dd5385ca8484a060aec901b677d0ec0cf2927f7cde" "f48b43277382ee56a9e3c5d08b71c3639f401f6338da00039dcac3c21c0811b5" "b1e54397de2c207e550dc3a090844c4b52d1a2c4a48a17163cce577b09c28236" "bad832ac33fcbce342b4d69431e7393701f0823a3820f6030ccc361edd2a4be4" "978bd4603630ecb1f01793af60beb52cb44734fc14b95c62e7b1a05f89b6c811" "e26780280b5248eb9b2d02a237d9941956fc94972443b0f7aeec12b5c15db9f3" "29a4267a4ae1e8b06934fec2ee49472daebd45e1ee6a10d8ff747853f9a3e622" "dc46381844ec8fcf9607a319aa6b442244d8c7a734a2625dac6a1f63e34bc4a6" "d0ff5ea54497471567ed15eb7279c37aef3465713fb97a50d46d95fe11ab4739" "f220c05492910a305f5d26414ad82bf25a321c35aa05b1565be12f253579dec6" "c7359bd375132044fe993562dfa736ae79efc620f68bab36bd686430c980df1c" "d293542c9d4be8a9e9ec8afd6938c7304ac3d0d39110344908706614ed5861c9" "61d1a82d5eaafffbdd3cab1ac843da873304d1f05f66ab5a981f833a3aec3fc0" "d971315c813b0269a86e7c5e73858070063016d9585492bd8d0f27704d50fee7" "450b29ed22abeeac279b7eeea592f4eea810105737716fc29807e1684e729c55" "5bff694d9bd3791807c205d8adf96817ee1e572654f6ddc5e1e58b0488369f9d" "f89e21c3aef10d2825f2f079962c2237cd9a45f4dc1958091be8a6f5b69bb70c" "337047491f7db019df2ba54483408d7d7faea0bda61e4c4f5e8cf2f4e3264478" "865d6cb994f89c13b2d7e5961df4eabeea12494583c240c8fe9a788d0f4ee12c" "d921083fbcd13748dd1eb638f66563d564762606f6ea4389ea9328b6f92723b7" "66bd7fc2ed32703a332d05f5d2af5c30c12ff4e729d77d8271b91d6f6f7e15fc" "3bd9497fb8f39c28ab58a9e957152ba2dc41223c23c5520ef10fc7bd6b222384" "1278386c1d30fc24b4248ba69bc5b49d92981c3476de700a074697d777cb0752" "78cfbd96775588c06c4fff22573aaa5fa762ca2b8eda43cb964b7739194ed3c1" "b674ccba78eb688bea71ea8a1fd2782fcd69bd462e2504008903b5b6e018b480" "4c9ba94db23a0a3dea88ee80f41d9478c151b07cb6640b33bfc38be7c2415cc4" "88d556f828e4ec17ac074077ef9dcaa36a59dccbaa6f2de553d6528b4df79cbd" "465be5317c7d95a84e376e095c21242f4f2ad75692ed806dcbb6fe27078260f1" "fa189fcf5074d4964f0a53f58d17c7e360bb8f879bd968ec4a56dc36b0013d29" "47583b577fb062aeb89d3c45689a4f2646b7ebcb02e6cb2d5f6e2790afb91a18" "5ce9c2d2ea2d789a7e8be2a095b8bc7db2e3b985f38c556439c358298827261c" "383806d341087214fd44864170161c6bf34a41e866f501d1be51883e08cb674b" "a68fa33e66a883ce1a5698bc6ff355b445c87da1867fdb68b9a7325ee6ea3507" "5339210234ec915d7d3fd87bfeb506bfc436ff7277a55516ab1781ec85c57224" "88b663861db4767f7881e5ecff9bb46d65161a20e40585c8128e8bed8747dae5" "77bd459212c0176bdf63c1904c4ba20fce015f730f0343776a1a14432de80990" "c1fb68aa00235766461c7e31ecfc759aa2dd905899ae6d95097061faeb72f9ee" "7feeed063855b06836e0262f77f5c6d3f415159a98a9676d549bfeb6c49637c4" "446c73cdfb49f1dab4c322e51ac00a536fb0e3cb7e6809b9f4616e0858012e92" "246a51f19b632c27d7071877ea99805d4f8131b0ff7acb8a607d4fd1c101e163" "1177fe4645eb8db34ee151ce45518e47cc4595c3e72c55dc07df03ab353ad132" "5dfacaf380068d9ed06e0872a066a305ab6a1217f25c3457b640e76c98ae20e6" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d7f1c86b425e148be505c689fc157d96323682c947b29ef00cf57b4e4e46e6c7" "050beead9159996a613ba4bc734de8b13b882f1c6596d1dffa4f51d096662cf6" "2affb26fb9a1b9325f05f4233d08ccbba7ec6e0c99c64681895219f964aac7af" "30f861ee9dc270afc2a9962c05e02d600c998905433c8b9211dc2b33caa97c51" "62b86b142b243071b5adb4d48a0ab89aefd3cf79ee3adc0bb297ea873b36d23f" "7fa9dc3948765d7cf3d7a289e40039c2c64abf0fad5c616453b263b601532493" "cc26d05641be64f11c7da487db926e70c7b537e5c2c668d57b197a2ea1a9cc02" "ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
+ '(custom-enabled-themes (quote (seti)))
+ '(custom-safe-themes (quote ("d5cc07fc60a19939579d80a4abb09b95fb47094ffa8f44a3d678b69f684494bb" "784d5ee4d33befba6a21702ead67f98346770be7cc17ab64952ae3866a403743" "f0a99f53cbf7b004ba0c1760aa14fd70f2eabafe4e62a2b3cf5cabae8203113b" "8b231ba3e5f61c2bb1bc3a2d84cbd16ea17ca13395653566d4dfbb11feaf8567" "0c311fb22e6197daba9123f43da98f273d2bfaeeaeb653007ad1ee77f0003037" "4ea594ee0eb3e5741ab7c4b3eeb36066f795c61aeebad843d74f0a28a81a0352" "2b5aa66b7d5be41b18cc67f3286ae664134b95ccc4a86c9339c886dfd736132d" "18d91d95e20450b0cdab4d7eed600e80c22cc7a4153a87989daa5a1c5aff3b83" "57072d797dc09fcf563051a85a29d6a51d6f2b1a602e029c35b05c30df319b2a" "cea6d15a8333e0c78e1e15a0524000de69aac2afa7bb6cf9d043a2627327844e" "636ecbf1091fbc99d95526d7a3a4810d1ccb58997e58bd3184863821303553f3" "5c674d297206a2494eff9bf650a2ffbb8261d5a2ee77563b8a6530525fec5b6d" "31bfef452bee11d19df790b82dea35a3b275142032e06c6ecdc98007bf12466c" "8bb1e9a22e9e9d405ca9bdf20b91301eba12c0b9778413ba7600e48d2d3ad1fb" "60e70079a187df634db25db4bb778255eaace1ef4309e56389459fb9418b4840" "394504bd559027641b544952d6e9e1c6dcb306b4d1b2c4ad6b98d3e6b5459683" "7a2c92b6267b84ae28a396f24dd832e29a164c1942f1f8b3fe500f1c25f8e09d" "1f3304214265481c56341bcee387ef1abb684e4efbccebca0e120be7b1a13589" "1cf3f29294c5a3509b7eb3ff9e96f8e8db9d2d08322620a04d862e40dc201fe2" "9ea054db5cdbd5baa4cda9d373a547435ba88d4e345f4b06f732edbc4f017dc3" "b8f561a188a77e450ab8a060128244c81dea206f15c1152a6899423dd607b327" "1c1e6b2640daffcd23b1f7dd5385ca8484a060aec901b677d0ec0cf2927f7cde" "f48b43277382ee56a9e3c5d08b71c3639f401f6338da00039dcac3c21c0811b5" "b1e54397de2c207e550dc3a090844c4b52d1a2c4a48a17163cce577b09c28236" "bad832ac33fcbce342b4d69431e7393701f0823a3820f6030ccc361edd2a4be4" "978bd4603630ecb1f01793af60beb52cb44734fc14b95c62e7b1a05f89b6c811" "e26780280b5248eb9b2d02a237d9941956fc94972443b0f7aeec12b5c15db9f3" "29a4267a4ae1e8b06934fec2ee49472daebd45e1ee6a10d8ff747853f9a3e622" "dc46381844ec8fcf9607a319aa6b442244d8c7a734a2625dac6a1f63e34bc4a6" "d0ff5ea54497471567ed15eb7279c37aef3465713fb97a50d46d95fe11ab4739" "f220c05492910a305f5d26414ad82bf25a321c35aa05b1565be12f253579dec6" "c7359bd375132044fe993562dfa736ae79efc620f68bab36bd686430c980df1c" "d293542c9d4be8a9e9ec8afd6938c7304ac3d0d39110344908706614ed5861c9" "61d1a82d5eaafffbdd3cab1ac843da873304d1f05f66ab5a981f833a3aec3fc0" "d971315c813b0269a86e7c5e73858070063016d9585492bd8d0f27704d50fee7" "450b29ed22abeeac279b7eeea592f4eea810105737716fc29807e1684e729c55" "5bff694d9bd3791807c205d8adf96817ee1e572654f6ddc5e1e58b0488369f9d" "f89e21c3aef10d2825f2f079962c2237cd9a45f4dc1958091be8a6f5b69bb70c" "337047491f7db019df2ba54483408d7d7faea0bda61e4c4f5e8cf2f4e3264478" "865d6cb994f89c13b2d7e5961df4eabeea12494583c240c8fe9a788d0f4ee12c" "d921083fbcd13748dd1eb638f66563d564762606f6ea4389ea9328b6f92723b7" "66bd7fc2ed32703a332d05f5d2af5c30c12ff4e729d77d8271b91d6f6f7e15fc" "3bd9497fb8f39c28ab58a9e957152ba2dc41223c23c5520ef10fc7bd6b222384" "1278386c1d30fc24b4248ba69bc5b49d92981c3476de700a074697d777cb0752" "78cfbd96775588c06c4fff22573aaa5fa762ca2b8eda43cb964b7739194ed3c1" "b674ccba78eb688bea71ea8a1fd2782fcd69bd462e2504008903b5b6e018b480" "4c9ba94db23a0a3dea88ee80f41d9478c151b07cb6640b33bfc38be7c2415cc4" "88d556f828e4ec17ac074077ef9dcaa36a59dccbaa6f2de553d6528b4df79cbd" "465be5317c7d95a84e376e095c21242f4f2ad75692ed806dcbb6fe27078260f1" "fa189fcf5074d4964f0a53f58d17c7e360bb8f879bd968ec4a56dc36b0013d29" "47583b577fb062aeb89d3c45689a4f2646b7ebcb02e6cb2d5f6e2790afb91a18" "5ce9c2d2ea2d789a7e8be2a095b8bc7db2e3b985f38c556439c358298827261c" "383806d341087214fd44864170161c6bf34a41e866f501d1be51883e08cb674b" "a68fa33e66a883ce1a5698bc6ff355b445c87da1867fdb68b9a7325ee6ea3507" "5339210234ec915d7d3fd87bfeb506bfc436ff7277a55516ab1781ec85c57224" "88b663861db4767f7881e5ecff9bb46d65161a20e40585c8128e8bed8747dae5" "77bd459212c0176bdf63c1904c4ba20fce015f730f0343776a1a14432de80990" "c1fb68aa00235766461c7e31ecfc759aa2dd905899ae6d95097061faeb72f9ee" "7feeed063855b06836e0262f77f5c6d3f415159a98a9676d549bfeb6c49637c4" "446c73cdfb49f1dab4c322e51ac00a536fb0e3cb7e6809b9f4616e0858012e92" "246a51f19b632c27d7071877ea99805d4f8131b0ff7acb8a607d4fd1c101e163" "1177fe4645eb8db34ee151ce45518e47cc4595c3e72c55dc07df03ab353ad132" "5dfacaf380068d9ed06e0872a066a305ab6a1217f25c3457b640e76c98ae20e6" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d7f1c86b425e148be505c689fc157d96323682c947b29ef00cf57b4e4e46e6c7" "050beead9159996a613ba4bc734de8b13b882f1c6596d1dffa4f51d096662cf6" "2affb26fb9a1b9325f05f4233d08ccbba7ec6e0c99c64681895219f964aac7af" "30f861ee9dc270afc2a9962c05e02d600c998905433c8b9211dc2b33caa97c51" "62b86b142b243071b5adb4d48a0ab89aefd3cf79ee3adc0bb297ea873b36d23f" "7fa9dc3948765d7cf3d7a289e40039c2c64abf0fad5c616453b263b601532493" "cc26d05641be64f11c7da487db926e70c7b537e5c2c668d57b197a2ea1a9cc02" "ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
  '(fci-rule-character-color "#d9d9d9")
  '(fci-rule-color "#383838")
  '(foreground-color "#cccccc")
  '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
- '(highlight-tail-colors
-   (quote
-    (("#eee8d5" . 0)
-     ("#B4C342" . 20)
-     ("#69CABF" . 30)
-     ("#69B7F0" . 50)
-     ("#DEB542" . 60)
-     ("#F2804F" . 70)
-     ("#F771AC" . 85)
-     ("#eee8d5" . 100))))
+ '(highlight-tail-colors (quote (("#eee8d5" . 0) ("#B4C342" . 20) ("#69CABF" . 30) ("#69B7F0" . 50) ("#DEB542" . 60) ("#F2804F" . 70) ("#F771AC" . 85) ("#eee8d5" . 100))))
  '(linum-format " %7i ")
  '(magit-diff-use-overlays nil)
  '(magit-use-overlays nil)
  '(main-line-color1 "#29282E")
  '(main-line-color2 "#292A24")
  '(main-line-separator-style (quote chamfer))
- '(org-agenda-files
-   (quote
-    ("/Users/cbilson/Dropbox/org/Agenda.org" "/Users/cbilson/Dropbox/org/Chinese.org" "/Users/cbilson/Dropbox/org/Finances.org" "/Users/cbilson/Dropbox/org/Notes.org" "/Users/cbilson/Dropbox/org/kanban.org" "/Users/cbilson/Dropbox/org/refile.org")))
+ '(org-agenda-files (quote ("/Users/cbilson/Dropbox/org/Agenda.org" "/Users/cbilson/Dropbox/org/Chinese.org" "/Users/cbilson/Dropbox/org/Finances.org" "/Users/cbilson/Dropbox/org/Notes.org" "/Users/cbilson/Dropbox/org/kanban.org" "/Users/cbilson/Dropbox/org/refile.org")))
  '(powerline-color1 "#29282E")
  '(powerline-color2 "#292A24")
- '(safe-local-variable-values (quote ((nrepl-buffer-ns . "notes.core"))))
+ '(safe-local-variable-values (quote ((flycheck-mode . t) (flycheck-mode) (nrepl-buffer-ns . "notes.core"))))
  '(send-mail-function (quote mailclient-send-it))
- '(syslog-debug-face
-   (quote
-    ((t :background unspecified :foreground "#2aa198" :weight bold))))
- '(syslog-error-face
-   (quote
-    ((t :background unspecified :foreground "#dc322f" :weight bold))))
+ '(syslog-debug-face (quote ((t :background unspecified :foreground "#2aa198" :weight bold))))
+ '(syslog-error-face (quote ((t :background unspecified :foreground "#dc322f" :weight bold))))
  '(syslog-hour-face (quote ((t :background unspecified :foreground "#859900"))))
- '(syslog-info-face
-   (quote
-    ((t :background unspecified :foreground "#268bd2" :weight bold))))
+ '(syslog-info-face (quote ((t :background unspecified :foreground "#268bd2" :weight bold))))
  '(syslog-ip-face (quote ((t :background unspecified :foreground "#b58900"))))
  '(syslog-su-face (quote ((t :background unspecified :foreground "#d33682"))))
- '(syslog-warn-face
-   (quote
-    ((t :background unspecified :foreground "#cb4b16" :weight bold))))
+ '(syslog-warn-face (quote ((t :background unspecified :foreground "#cb4b16" :weight bold))))
  '(vc-annotate-background "#2B2B2B")
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#BC8383")
-     (40 . "#CC9393")
-     (60 . "#DFAF8F")
-     (80 . "#D0BF8F")
-     (100 . "#E0CF9F")
-     (120 . "#F0DFAF")
-     (140 . "#5F7F5F")
-     (160 . "#7F9F7F")
-     (180 . "#8FB28F")
-     (200 . "#9FC59F")
-     (220 . "#AFD8AF")
-     (240 . "#BFEBBF")
-     (260 . "#93E0E3")
-     (280 . "#6CA0A3")
-     (300 . "#7CB8BB")
-     (320 . "#8CD0D3")
-     (340 . "#94BFF3")
-     (360 . "#DC8CC3"))))
+ '(vc-annotate-color-map (quote ((20 . "#BC8383") (40 . "#CC9393") (60 . "#DFAF8F") (80 . "#D0BF8F") (100 . "#E0CF9F") (120 . "#F0DFAF") (140 . "#5F7F5F") (160 . "#7F9F7F") (180 . "#8FB28F") (200 . "#9FC59F") (220 . "#AFD8AF") (240 . "#BFEBBF") (260 . "#93E0E3") (280 . "#6CA0A3") (300 . "#7CB8BB") (320 . "#8CD0D3") (340 . "#94BFF3") (360 . "#DC8CC3"))))
  '(vc-annotate-very-old-color "#DC8CC3")
- '(weechat-color-list
-   (quote
-    (unspecified "#002b36" "#073642" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#839496" "#657b83"))))
+ '(weechat-color-list (quote (unspecified "#002b36" "#073642" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#839496" "#657b83"))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
