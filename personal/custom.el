@@ -408,7 +408,8 @@
        (cider-eval-and-get-value "(user/reset)"))
 
      (define-key clojure-mode-map (kbd "C-c M-r") 'nrepl-reset)
-     (define-key cider-mode-map (kbd "C-c M-r") 'nrepl-reset)))
+     (define-key cider-mode-map (kbd "C-c M-r") 'nrepl-reset)
+     (define-key cider-repl-mode-map (kbd "RET") 'cider-repl-return)))
 
 (eval-after-load "elein"
   '(progn
