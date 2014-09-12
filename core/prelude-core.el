@@ -42,18 +42,17 @@ When in dired mode, open file under the cursor.
 
 With a prefix ARG always prompt for command to use."
   (interactive "P")
-  (let ((current-file-name
-         (if (eq major-mode 'dired-mode)
-             (dired-get-file-for-visit)
-           buffer-file-name)))
-    (when current-file-name
-        (start-process "prelude-open-with-process"
-                       "*prelude-open-with-output*"
-                       (cond
-                        ((and (not arg) (eq system-type 'darwin)) "open")
-                        ((and (not arg) (member system-type '(gnu gnu/linux gnu/kfreebsd))) "xdg-open")
-                        (t (read-shell-command "Open current file with: ")))
-                       (shell-quote-argument current-file-name)))))
+  (let* ((current-file-name
+          (if (eq major-mode 'dired-mode)
+              (dired-get-file-for-visit)
+            buffer-file-name))
+         (open (pcase system-type
+                 (`darwin "open")
+                 ((or `gnu `gnu/linux `gnu/kfreebsd) "xdg-open")))
+         (program (if (or arg (not open))
+                      (read-shell-command "Open current file with: ")
+                    open)))
+    (start-process "prelude-open-with-process" nil program current-file-name)))
 
 (defun prelude-buffer-mode (buffer-or-name)
   "Retrieve the `major-mode' of BUFFER-OR-NAME."
@@ -380,8 +379,8 @@ Doesn't mess with special buffers."
 (defvar prelude-tips
   '("Press <C-c o> to open a file with external program."
     "Press <C-c p f> to navigate a project's files with ido."
-    "Press <C-c p g> to run grep on a project."
-    "Press <C-c p s> or <s-p> to switch between projects."
+    "Press <C-c p s g> to run grep on a project."
+    "Press <C-c p p> to switch between projects."
     "Press <C-=> to expand the selected region."
     "Press <C-c g> to search in Google."
     "Press <C-c G> to search in GitHub."

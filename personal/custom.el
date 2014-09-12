@@ -399,7 +399,7 @@
            cider-repl-print-length 10
            cider-repl-history-file (expand-file-name "~/.emacs.d/personal/.cider-history")
            nrepl-hide-special-buffers nil ; t
-           cider-repl-pop-to-buffer-on-connect nil)
+           cider-repl-pop-to-buffer-on-connect t)
 
      (defun nrepl-reset ()
        "Calls the reset function in the user namespace
@@ -407,8 +407,10 @@
        (interactive)
        (cider-eval-and-get-value "(user/reset)"))
 
+     (smartparens-strict-mode nil)
      (define-key clojure-mode-map (kbd "C-c M-r") 'nrepl-reset)
-     (define-key cider-mode-map (kbd "C-c M-r") 'nrepl-reset)))
+     (define-key cider-mode-map (kbd "C-c M-r") 'nrepl-reset)
+     (define-key cider-repl-mode-map (kbd "RET") 'cider-repl-return)))
 
 (eval-after-load "elein"
   '(progn
