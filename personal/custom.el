@@ -407,10 +407,14 @@
        (interactive)
        (cider-eval-and-get-value "(user/reset)"))
 
-     (smartparens-strict-mode nil)
      (define-key clojure-mode-map (kbd "C-c M-r") 'nrepl-reset)
      (define-key cider-mode-map (kbd "C-c M-r") 'nrepl-reset)
-     (define-key cider-repl-mode-map (kbd "RET") 'cider-repl-return)))
+     (define-key cider-repl-mode-map (kbd "RET") 'cider-repl-return)
+
+     (defun my-cider-repl-mode-hook ()
+       (smartparens-strict-mode nil))
+
+     (add-hook 'cider-repl-mode-hook 'my-cider-repl-mode-hook)))
 
 (eval-after-load "elein"
   '(progn
