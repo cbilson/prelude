@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: appcss
+# key: appcss
+# binding: direct-keybinding
+# --
+<link rel="stylesheet" href="css/app.css" />

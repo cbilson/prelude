@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: jsi
+# key: jsi
+# binding: direct-keybinding
+# --
+<script type="text/javascript" src="js/$1"></script>

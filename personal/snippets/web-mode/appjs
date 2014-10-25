@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: appjs
+# key: appjs
+# binding: direct-keybinding
+# --
+<script type="text/javascript" src="js/app.js"></script>

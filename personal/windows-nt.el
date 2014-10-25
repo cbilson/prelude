@@ -26,6 +26,7 @@
     (set-default-font consolas)
 
     (setq git-gutter+-git-executable "C:/git/bin/git.exe")
+    (setq cider-lein-command "C:/Tools/lein.bat")
 
     (eval-after-load "twittering-mode"
       '(progn

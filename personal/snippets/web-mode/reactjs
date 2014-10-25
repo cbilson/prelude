@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: reactjs
+# key: reactjs
+# binding: direct-keybinding
+# --
+<script type="text/javascript" src="js/react-0.11.1.js"></script>

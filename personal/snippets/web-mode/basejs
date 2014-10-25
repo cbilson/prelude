@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: basejs
+# key: basejs
+# binding: direct-keybinding
+# --
+<script type="text/javascript" src="js/goog/base.js"></script>

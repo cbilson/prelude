@@ -76,6 +76,7 @@
 ;;; Global Settings
 ;;;
 (global-hl-line-mode -1)
+
 (global-auto-revert-mode 1)
 (global-undo-tree-mode 1)
 (global-subword-mode 1)
@@ -238,48 +239,6 @@
 ;;; Code Editing
 ;;;
 
-(require 'smartparens)
-(require 'smartparens-config) ; Setup standard configuration
-
-(define-key smartparens-mode-map (kbd "C-M-f") #'sp-forward-sexp)
-(define-key smartparens-mode-map (kbd "C-M-b") #'sp-backward-sexp)
-(define-key smartparens-mode-map (kbd "C-M-u") #'sp-backward-up-sexp)
-(define-key smartparens-mode-map (kbd "C-M-d") #'sp-down-sexp)
-(define-key smartparens-mode-map (kbd "C-M-p") #'sp-backward-down-sexp)
-(define-key smartparens-mode-map (kbd "C-M-n") #'sp-up-sexp)
-
-;; Deleting and killing
-(define-key smartparens-mode-map (kbd "C-M-k") #'sp-kill-sexp)
-(define-key smartparens-mode-map (kbd "C-M-w") #'sp-copy-sexp)
-
-;; Depth changing
-(define-key smartparens-mode-map (kbd "M-s") #'sp-splice-sexp)
-(define-key smartparens-mode-map (kbd "M-<up>") #'sp-splice-sexp-killing-backward)
-(define-key smartparens-mode-map (kbd "M-<down>") #'sp-splice-sexp-killing-forward)
-(define-key smartparens-mode-map (kbd "M-r") #'sp-splice-sexp-killing-around)
-(define-key smartparens-mode-map (kbd "M-?") #'sp-convolute-sexp)
-
-;; Barfage & Slurpage
-(define-key smartparens-mode-map (kbd "C-c )")  #'sp-forward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-)")  #'sp-forward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-<right>") #'sp-forward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-}")  #'sp-forward-barf-sexp)
-(define-key smartparens-mode-map (kbd "C-<left>") #'sp-forward-barf-sexp)
-(define-key smartparens-mode-map (kbd "C-(")  #'sp-backward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-c (")  #'sp-backward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-M-<left>") #'sp-backward-slurp-sexp)
-(define-key smartparens-mode-map (kbd "C-{")  #'sp-backward-barf-sexp)
-(define-key smartparens-mode-map (kbd "C-M-<right>") #'sp-backward-barf-sexp)
-
-;; Miscellaneous commands
-(define-key smartparens-mode-map (kbd "M-S") #'sp-split-sexp)
-(define-key smartparens-mode-map (kbd "M-J") #'sp-join-sexp)
-(define-key smartparens-mode-map (kbd "C-M-t") #'sp-transpose-sexp)
-
-(define-key smartparens-strict-mode-map (kbd "M-q") #'sp-indent-defun)
-(define-key smartparens-strict-mode-map (kbd "RET") #'sp-newline)
-(define-key smartparens-strict-mode-map (kbd "M-;") #'sp-comment)
-
 ;;; prog-mode
 (eval-after-load "simple"
   '(progn
@@ -325,7 +284,17 @@
   '(progn
      (define-key lisp-mode-shared-map (kbd "C-x C-e") 'eval-last-sexp)
      (define-key lisp-mode-shared-map (kbd "C-c C-k") 'eval-buffer)
-     (define-key lisp-interaction-mode-map (kbd "C-x C-e") 'eval-print-last-sexp)))
+     (define-key lisp-interaction-mode-map (kbd "C-x C-e") 'eval-print-last-sexp)
+     (define-key lisp-mode-map (kbd "RET") 'newline-and-indent)
+     (define-key lisp-mode-map (kbd ";") 'comment-dwim)))
+
+(eval-after-load "emacs-lisp-mode"
+  '(progn
+     (define-key emacs-lisp-mode-shared-map (kbd "C-x C-e") 'eval-last-sexp)
+     (define-key emacs-lisp-mode-shared-map (kbd "C-c C-k") 'eval-buffer)
+     (define-key emacs-lisp-interaction-mode-map (kbd "C-x C-e") 'eval-print-last-sexp)
+     (define-key emacs-lisp-mode-map (kbd "RET") 'newline-and-indent)
+     (define-key emacs-lisp-mode-map (kbd ";") 'comment-dwim)))
 
 (eval-after-load "ielm"
   '(progn
@@ -334,53 +303,17 @@
 ;;; Clojure Stuff
 (eval-after-load "clojure-mode"
   '(progn
-     ;; (require 'clojure-cheatsheet)
-
-     (defun helm-clojure-headlines ()
-       "Display headlines for the current Clojure file."
-       (interactive)
-       (helm :sources '(((name . "Clojure Headlines")
-                         (volatile)
-                         (headline "^[;(]")))))
+     (define-key clojure-mode-map (kbd "C-c M-r") 'nrepl-reset)
+     (define-key clojure-mode-map (kbd "RET") 'newline-and-indent)
+     (define-key clojure-mode-map (kbd ";") 'comment-dwim)
 
      (defun elein-deps ()
        (interactive)
        (elein-run-cmd "deps"))))
 
-(eval-after-load "clojurescript"
+(eval-after-load "clojurescript-mode"
   '(progn
-     (defun clojurescript-run-cljsbuild (dir)
-       (interactive (list default-directory))
-       (when (get-buffer "*lein-cljsbuild*")
-         (kill-buffer "*lein-cljsbuild*"))
-       (let* ((cmd (format "cd %s && lein cljsbuild auto" dir))
-              (proc (start-process-shell-command
-                     "leincljsbuild" "*lein-cljsbuild*" cmd)))
-         (message (format "dir: %s" dir))
-         (set-process-filter proc
-                             (lambda (process output)
-                               (with-current-buffer (process-buffer process)
-                                 (save-excursion
-                                   (goto-char (point-max))
-                                   (insert output)))
-                               (cond
-                                ((string-match "That's not a task" output)
-                                 (let ((debug-on-error t))
-                                   (error "Couldn't run `lein cljsbuild'. Wrong directory?")))
-                                ((string-match "\\(Deleting\\|Compiling\\) ClojureScript" output)
-                                 (message "lein cljsbuild: %s files" (match-string 1 output)))
-                                ((string-match "Failed!" output)
-                                 (message "lein cljsbuild: Compilation FAILED")
-                                 (ding))
-                                ((string-match "compiled \".+\" in \\(.+\\) seconds" output)
-                                 (message "lein cljsbuild: Finished in %s seconds"
-                                          (match-string 1 output))))))
-         (display-buffer (get-buffer "*lein-cljsbuild*"))
-         (message "Running lein cljsbuild...")))
-
-     (defun clojurescript-repl-listen (dir)
-       (interactive (list default-directory))
-       (inferior-lisp (format "cd %s && lein trampoline cljsbuild repl-listen" dir)))))
+     (define-key clojurescript-mode-map (kbd "RET") 'newline-and-indent)))
 
 (eval-after-load "cider"
   '(progn
@@ -398,7 +331,7 @@
            cider-repl-wrap-history t
            cider-repl-print-length 10
            cider-repl-history-file (expand-file-name "~/.emacs.d/personal/.cider-history")
-           nrepl-hide-special-buffers nil ; t
+           nrepl-hide-special-buffers t
            cider-repl-pop-to-buffer-on-connect t)
 
      (defun nrepl-reset ()
@@ -408,13 +341,9 @@
        (cider-eval-and-get-value "(user/reset)"))
 
      (define-key clojure-mode-map (kbd "C-c M-r") 'nrepl-reset)
+     (define-key clojure-mode-map (kbd "RET") 'newline-and-indent)
      (define-key cider-mode-map (kbd "C-c M-r") 'nrepl-reset)
-     (define-key cider-repl-mode-map (kbd "RET") 'cider-repl-return)
-
-     (defun my-cider-repl-mode-hook ()
-       (smartparens-strict-mode nil))
-
-     (add-hook 'cider-repl-mode-hook 'my-cider-repl-mode-hook)))
+     (define-key cider-repl-mode-map (kbd "RET") 'cider-repl-return)))
 
 (eval-after-load "elein"
   '(progn
@@ -527,6 +456,12 @@
 (eval-after-load "html-mode"
   '(progn
      (add-hook 'html-mode-hook 'emmet-mode)))
+
+(eval-after-load "web-mode"
+  '(progn
+     (add-hook 'web-mode-hook 'emmet-mode)
+     (add-hook 'web-mode-hook 'smartparens-strict-mode)
+     (define-key web-mode-map (kbd "RET") 'newline-and-indent)))
 
 (setq plantuml-jar-path (concat (file-name-as-directory prelude-vendor-dir)
                                 "plantuml.jar"))
@@ -933,10 +868,10 @@
  '(canlock-password "cbdcf02760b26ab76b6e750b73c6674d6820b554")
  '(compilation-message-face (quote default))
  '(cursor-color "#cccccc")
- '(custom-enabled-themes (quote (seti)))
- '(custom-safe-themes (quote ("d5cc07fc60a19939579d80a4abb09b95fb47094ffa8f44a3d678b69f684494bb" "784d5ee4d33befba6a21702ead67f98346770be7cc17ab64952ae3866a403743" "f0a99f53cbf7b004ba0c1760aa14fd70f2eabafe4e62a2b3cf5cabae8203113b" "8b231ba3e5f61c2bb1bc3a2d84cbd16ea17ca13395653566d4dfbb11feaf8567" "0c311fb22e6197daba9123f43da98f273d2bfaeeaeb653007ad1ee77f0003037" "4ea594ee0eb3e5741ab7c4b3eeb36066f795c61aeebad843d74f0a28a81a0352" "2b5aa66b7d5be41b18cc67f3286ae664134b95ccc4a86c9339c886dfd736132d" "18d91d95e20450b0cdab4d7eed600e80c22cc7a4153a87989daa5a1c5aff3b83" "57072d797dc09fcf563051a85a29d6a51d6f2b1a602e029c35b05c30df319b2a" "cea6d15a8333e0c78e1e15a0524000de69aac2afa7bb6cf9d043a2627327844e" "636ecbf1091fbc99d95526d7a3a4810d1ccb58997e58bd3184863821303553f3" "5c674d297206a2494eff9bf650a2ffbb8261d5a2ee77563b8a6530525fec5b6d" "31bfef452bee11d19df790b82dea35a3b275142032e06c6ecdc98007bf12466c" "8bb1e9a22e9e9d405ca9bdf20b91301eba12c0b9778413ba7600e48d2d3ad1fb" "60e70079a187df634db25db4bb778255eaace1ef4309e56389459fb9418b4840" "394504bd559027641b544952d6e9e1c6dcb306b4d1b2c4ad6b98d3e6b5459683" "7a2c92b6267b84ae28a396f24dd832e29a164c1942f1f8b3fe500f1c25f8e09d" "1f3304214265481c56341bcee387ef1abb684e4efbccebca0e120be7b1a13589" "1cf3f29294c5a3509b7eb3ff9e96f8e8db9d2d08322620a04d862e40dc201fe2" "9ea054db5cdbd5baa4cda9d373a547435ba88d4e345f4b06f732edbc4f017dc3" "b8f561a188a77e450ab8a060128244c81dea206f15c1152a6899423dd607b327" "1c1e6b2640daffcd23b1f7dd5385ca8484a060aec901b677d0ec0cf2927f7cde" "f48b43277382ee56a9e3c5d08b71c3639f401f6338da00039dcac3c21c0811b5" "b1e54397de2c207e550dc3a090844c4b52d1a2c4a48a17163cce577b09c28236" "bad832ac33fcbce342b4d69431e7393701f0823a3820f6030ccc361edd2a4be4" "978bd4603630ecb1f01793af60beb52cb44734fc14b95c62e7b1a05f89b6c811" "e26780280b5248eb9b2d02a237d9941956fc94972443b0f7aeec12b5c15db9f3" "29a4267a4ae1e8b06934fec2ee49472daebd45e1ee6a10d8ff747853f9a3e622" "dc46381844ec8fcf9607a319aa6b442244d8c7a734a2625dac6a1f63e34bc4a6" "d0ff5ea54497471567ed15eb7279c37aef3465713fb97a50d46d95fe11ab4739" "f220c05492910a305f5d26414ad82bf25a321c35aa05b1565be12f253579dec6" "c7359bd375132044fe993562dfa736ae79efc620f68bab36bd686430c980df1c" "d293542c9d4be8a9e9ec8afd6938c7304ac3d0d39110344908706614ed5861c9" "61d1a82d5eaafffbdd3cab1ac843da873304d1f05f66ab5a981f833a3aec3fc0" "d971315c813b0269a86e7c5e73858070063016d9585492bd8d0f27704d50fee7" "450b29ed22abeeac279b7eeea592f4eea810105737716fc29807e1684e729c55" "5bff694d9bd3791807c205d8adf96817ee1e572654f6ddc5e1e58b0488369f9d" "f89e21c3aef10d2825f2f079962c2237cd9a45f4dc1958091be8a6f5b69bb70c" "337047491f7db019df2ba54483408d7d7faea0bda61e4c4f5e8cf2f4e3264478" "865d6cb994f89c13b2d7e5961df4eabeea12494583c240c8fe9a788d0f4ee12c" "d921083fbcd13748dd1eb638f66563d564762606f6ea4389ea9328b6f92723b7" "66bd7fc2ed32703a332d05f5d2af5c30c12ff4e729d77d8271b91d6f6f7e15fc" "3bd9497fb8f39c28ab58a9e957152ba2dc41223c23c5520ef10fc7bd6b222384" "1278386c1d30fc24b4248ba69bc5b49d92981c3476de700a074697d777cb0752" "78cfbd96775588c06c4fff22573aaa5fa762ca2b8eda43cb964b7739194ed3c1" "b674ccba78eb688bea71ea8a1fd2782fcd69bd462e2504008903b5b6e018b480" "4c9ba94db23a0a3dea88ee80f41d9478c151b07cb6640b33bfc38be7c2415cc4" "88d556f828e4ec17ac074077ef9dcaa36a59dccbaa6f2de553d6528b4df79cbd" "465be5317c7d95a84e376e095c21242f4f2ad75692ed806dcbb6fe27078260f1" "fa189fcf5074d4964f0a53f58d17c7e360bb8f879bd968ec4a56dc36b0013d29" "47583b577fb062aeb89d3c45689a4f2646b7ebcb02e6cb2d5f6e2790afb91a18" "5ce9c2d2ea2d789a7e8be2a095b8bc7db2e3b985f38c556439c358298827261c" "383806d341087214fd44864170161c6bf34a41e866f501d1be51883e08cb674b" "a68fa33e66a883ce1a5698bc6ff355b445c87da1867fdb68b9a7325ee6ea3507" "5339210234ec915d7d3fd87bfeb506bfc436ff7277a55516ab1781ec85c57224" "88b663861db4767f7881e5ecff9bb46d65161a20e40585c8128e8bed8747dae5" "77bd459212c0176bdf63c1904c4ba20fce015f730f0343776a1a14432de80990" "c1fb68aa00235766461c7e31ecfc759aa2dd905899ae6d95097061faeb72f9ee" "7feeed063855b06836e0262f77f5c6d3f415159a98a9676d549bfeb6c49637c4" "446c73cdfb49f1dab4c322e51ac00a536fb0e3cb7e6809b9f4616e0858012e92" "246a51f19b632c27d7071877ea99805d4f8131b0ff7acb8a607d4fd1c101e163" "1177fe4645eb8db34ee151ce45518e47cc4595c3e72c55dc07df03ab353ad132" "5dfacaf380068d9ed06e0872a066a305ab6a1217f25c3457b640e76c98ae20e6" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d7f1c86b425e148be505c689fc157d96323682c947b29ef00cf57b4e4e46e6c7" "050beead9159996a613ba4bc734de8b13b882f1c6596d1dffa4f51d096662cf6" "2affb26fb9a1b9325f05f4233d08ccbba7ec6e0c99c64681895219f964aac7af" "30f861ee9dc270afc2a9962c05e02d600c998905433c8b9211dc2b33caa97c51" "62b86b142b243071b5adb4d48a0ab89aefd3cf79ee3adc0bb297ea873b36d23f" "7fa9dc3948765d7cf3d7a289e40039c2c64abf0fad5c616453b263b601532493" "cc26d05641be64f11c7da487db926e70c7b537e5c2c668d57b197a2ea1a9cc02" "ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
+ '(custom-enabled-themes (quote (soft-stone)))
+ '(custom-safe-themes (quote ("e24180589c0267df991cf54bf1a795c07d00b24169206106624bb844292807b9" "e6d83e70d2955e374e821e6785cd661ec363091edf56a463d0018dc49fbc92dd" "e74d80bf86c7951b1a27994faa417f7e3b4a02f7a365ed224f032bd29f5d2d6d" "6634408f60b490958b19759ebf1f56d97b8b8c69d44186a6c1a8056702a73301" "47bff723f2aca3a9a5726abcc52a7cc4192b556dd80b3f773589994d2ed24d16" "1011be33e9843afd22d8d26b031fbbb59036b1ce537d0b250347c19e1bd959d0" "013e87003e1e965d8ad78ee5b8927e743f940c7679959149bbee9a15bd286689" "cc0dbb53a10215b696d391a90de635ba1699072745bf653b53774706999208e3" "b9183de9666c3a16a7ffa7faaa8e9941b8d0ab50f9aaba1ca49f2f3aec7e3be9" "930a202ae41cb4417a89bc3a6f969ebb7fcea5ffa9df6e7313df4f7a2a631434" "65ae93029a583d69a3781b26044601e85e2d32be8f525988e196ba2cb644ce6a" "a99e7c91236b2aba4cd374080c73f390c55173c5a1b4ac662eeb3172b60a9814" "572caef0c27b100a404db8d540fd5b31397f90ab660ef5539ff0863ff9bee26a" "b6f7795c2fbf75baf3419c60ef7625154c046fc2b10e3fdd188e5757e08ac0ec" "1e194b1010c026b1401146e24a85e4b7c545276845fc38b8c4b371c8338172ad" "8f7e1668dd3a097964e6016c26d36822ab2e48fc3e9a3a2e2634224a5ca728c8" "d5cc07fc60a19939579d80a4abb09b95fb47094ffa8f44a3d678b69f684494bb" "784d5ee4d33befba6a21702ead67f98346770be7cc17ab64952ae3866a403743" "f0a99f53cbf7b004ba0c1760aa14fd70f2eabafe4e62a2b3cf5cabae8203113b" "8b231ba3e5f61c2bb1bc3a2d84cbd16ea17ca13395653566d4dfbb11feaf8567" "0c311fb22e6197daba9123f43da98f273d2bfaeeaeb653007ad1ee77f0003037" "4ea594ee0eb3e5741ab7c4b3eeb36066f795c61aeebad843d74f0a28a81a0352" "2b5aa66b7d5be41b18cc67f3286ae664134b95ccc4a86c9339c886dfd736132d" "18d91d95e20450b0cdab4d7eed600e80c22cc7a4153a87989daa5a1c5aff3b83" "57072d797dc09fcf563051a85a29d6a51d6f2b1a602e029c35b05c30df319b2a" "cea6d15a8333e0c78e1e15a0524000de69aac2afa7bb6cf9d043a2627327844e" "636ecbf1091fbc99d95526d7a3a4810d1ccb58997e58bd3184863821303553f3" "5c674d297206a2494eff9bf650a2ffbb8261d5a2ee77563b8a6530525fec5b6d" "31bfef452bee11d19df790b82dea35a3b275142032e06c6ecdc98007bf12466c" "8bb1e9a22e9e9d405ca9bdf20b91301eba12c0b9778413ba7600e48d2d3ad1fb" "60e70079a187df634db25db4bb778255eaace1ef4309e56389459fb9418b4840" "394504bd559027641b544952d6e9e1c6dcb306b4d1b2c4ad6b98d3e6b5459683" "7a2c92b6267b84ae28a396f24dd832e29a164c1942f1f8b3fe500f1c25f8e09d" "1f3304214265481c56341bcee387ef1abb684e4efbccebca0e120be7b1a13589" "1cf3f29294c5a3509b7eb3ff9e96f8e8db9d2d08322620a04d862e40dc201fe2" "9ea054db5cdbd5baa4cda9d373a547435ba88d4e345f4b06f732edbc4f017dc3" "b8f561a188a77e450ab8a060128244c81dea206f15c1152a6899423dd607b327" "1c1e6b2640daffcd23b1f7dd5385ca8484a060aec901b677d0ec0cf2927f7cde" "f48b43277382ee56a9e3c5d08b71c3639f401f6338da00039dcac3c21c0811b5" "b1e54397de2c207e550dc3a090844c4b52d1a2c4a48a17163cce577b09c28236" "bad832ac33fcbce342b4d69431e7393701f0823a3820f6030ccc361edd2a4be4" "978bd4603630ecb1f01793af60beb52cb44734fc14b95c62e7b1a05f89b6c811" "e26780280b5248eb9b2d02a237d9941956fc94972443b0f7aeec12b5c15db9f3" "29a4267a4ae1e8b06934fec2ee49472daebd45e1ee6a10d8ff747853f9a3e622" "dc46381844ec8fcf9607a319aa6b442244d8c7a734a2625dac6a1f63e34bc4a6" "d0ff5ea54497471567ed15eb7279c37aef3465713fb97a50d46d95fe11ab4739" "f220c05492910a305f5d26414ad82bf25a321c35aa05b1565be12f253579dec6" "c7359bd375132044fe993562dfa736ae79efc620f68bab36bd686430c980df1c" "d293542c9d4be8a9e9ec8afd6938c7304ac3d0d39110344908706614ed5861c9" "61d1a82d5eaafffbdd3cab1ac843da873304d1f05f66ab5a981f833a3aec3fc0" "d971315c813b0269a86e7c5e73858070063016d9585492bd8d0f27704d50fee7" "450b29ed22abeeac279b7eeea592f4eea810105737716fc29807e1684e729c55" "5bff694d9bd3791807c205d8adf96817ee1e572654f6ddc5e1e58b0488369f9d" "f89e21c3aef10d2825f2f079962c2237cd9a45f4dc1958091be8a6f5b69bb70c" "337047491f7db019df2ba54483408d7d7faea0bda61e4c4f5e8cf2f4e3264478" "865d6cb994f89c13b2d7e5961df4eabeea12494583c240c8fe9a788d0f4ee12c" "d921083fbcd13748dd1eb638f66563d564762606f6ea4389ea9328b6f92723b7" "66bd7fc2ed32703a332d05f5d2af5c30c12ff4e729d77d8271b91d6f6f7e15fc" "3bd9497fb8f39c28ab58a9e957152ba2dc41223c23c5520ef10fc7bd6b222384" "1278386c1d30fc24b4248ba69bc5b49d92981c3476de700a074697d777cb0752" "78cfbd96775588c06c4fff22573aaa5fa762ca2b8eda43cb964b7739194ed3c1" "b674ccba78eb688bea71ea8a1fd2782fcd69bd462e2504008903b5b6e018b480" "4c9ba94db23a0a3dea88ee80f41d9478c151b07cb6640b33bfc38be7c2415cc4" "88d556f828e4ec17ac074077ef9dcaa36a59dccbaa6f2de553d6528b4df79cbd" "465be5317c7d95a84e376e095c21242f4f2ad75692ed806dcbb6fe27078260f1" "fa189fcf5074d4964f0a53f58d17c7e360bb8f879bd968ec4a56dc36b0013d29" "47583b577fb062aeb89d3c45689a4f2646b7ebcb02e6cb2d5f6e2790afb91a18" "5ce9c2d2ea2d789a7e8be2a095b8bc7db2e3b985f38c556439c358298827261c" "383806d341087214fd44864170161c6bf34a41e866f501d1be51883e08cb674b" "a68fa33e66a883ce1a5698bc6ff355b445c87da1867fdb68b9a7325ee6ea3507" "5339210234ec915d7d3fd87bfeb506bfc436ff7277a55516ab1781ec85c57224" "88b663861db4767f7881e5ecff9bb46d65161a20e40585c8128e8bed8747dae5" "77bd459212c0176bdf63c1904c4ba20fce015f730f0343776a1a14432de80990" "c1fb68aa00235766461c7e31ecfc759aa2dd905899ae6d95097061faeb72f9ee" "7feeed063855b06836e0262f77f5c6d3f415159a98a9676d549bfeb6c49637c4" "446c73cdfb49f1dab4c322e51ac00a536fb0e3cb7e6809b9f4616e0858012e92" "246a51f19b632c27d7071877ea99805d4f8131b0ff7acb8a607d4fd1c101e163" "1177fe4645eb8db34ee151ce45518e47cc4595c3e72c55dc07df03ab353ad132" "5dfacaf380068d9ed06e0872a066a305ab6a1217f25c3457b640e76c98ae20e6" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d7f1c86b425e148be505c689fc157d96323682c947b29ef00cf57b4e4e46e6c7" "050beead9159996a613ba4bc734de8b13b882f1c6596d1dffa4f51d096662cf6" "2affb26fb9a1b9325f05f4233d08ccbba7ec6e0c99c64681895219f964aac7af" "30f861ee9dc270afc2a9962c05e02d600c998905433c8b9211dc2b33caa97c51" "62b86b142b243071b5adb4d48a0ab89aefd3cf79ee3adc0bb297ea873b36d23f" "7fa9dc3948765d7cf3d7a289e40039c2c64abf0fad5c616453b263b601532493" "cc26d05641be64f11c7da487db926e70c7b537e5c2c668d57b197a2ea1a9cc02" "ea0c5df0f067d2e3c0f048c1f8795af7b873f5014837feb0a7c8317f34417b04" default)))
  '(fci-rule-character-color "#d9d9d9")
- '(fci-rule-color "#383838")
+ '(fci-rule-color "#383838" t)
  '(foreground-color "#cccccc")
  '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
  '(highlight-tail-colors (quote (("#eee8d5" . 0) ("#B4C342" . 20) ("#69CABF" . 30) ("#69B7F0" . 50) ("#DEB542" . 60) ("#F2804F" . 70) ("#F771AC" . 85) ("#eee8d5" . 100))))
@@ -949,6 +884,8 @@
  '(org-agenda-files (quote ("/Users/cbilson/Dropbox/org/Agenda.org" "/Users/cbilson/Dropbox/org/Chinese.org" "/Users/cbilson/Dropbox/org/Finances.org" "/Users/cbilson/Dropbox/org/Notes.org" "/Users/cbilson/Dropbox/org/kanban.org" "/Users/cbilson/Dropbox/org/refile.org")))
  '(powerline-color1 "#29282E")
  '(powerline-color2 "#292A24")
+ '(rainbow-identifiers-cie-l*a*b*-lightness 25)
+ '(rainbow-identifiers-cie-l*a*b*-saturation 40)
  '(safe-local-variable-values (quote ((flycheck-mode . t) (flycheck-mode) (nrepl-buffer-ns . "notes.core"))))
  '(send-mail-function (quote mailclient-send-it))
  '(syslog-debug-face (quote ((t :background unspecified :foreground "#2aa198" :weight bold))))

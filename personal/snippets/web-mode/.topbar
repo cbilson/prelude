@@ -1,0 +1,12 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: .topbar
+# key: .topbar
+# binding: direct-keybinding
+# --
+<nav class="top-bar" data-top bar="" role="navigation">
+  <ul class="title-area">
+    <li class="name">
+      <h1><a href="#">$1</a></h1>
+    </li>
+  </ul>
+</nav>
